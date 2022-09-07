@@ -1,7 +1,7 @@
-import {Matrix, rotMat90, Num2Tuple} from "@/tetris_model/util";
-import {Vec2} from "@/tetris_model/Vec2";
-import {Cell} from "@/tetris_model/Cell";
-import {Field} from "@/tetris_model/Field";
+import {Matrix, rotMat90, Num2Tuple} from "./util";
+import {Vec2} from "./Vec2";
+import {Cell} from "./Cell";
+import {Field} from "./Field";
 
 // Фигура на поле (текущая управляемая фигура)
 export class Figure {
@@ -42,14 +42,14 @@ export class Figure {
 
     // Поворот фигуры
     rotate(mat: Matrix<number> = rotMat90) {
-        for (let i = 0; i < this.cells.length; i++) {
-            this.cells[i].pos =
-                this.cells[i].pos
+        this.cells.forEach(cell =>
+            cell.pos =
+                cell.pos
                     .translate(this.center.neg())
                     .rotate(mat)
                     .translate(this.center)
-                    .round();
-        }
+                    .round()
+        );
     }
 
     // Копия фигуры

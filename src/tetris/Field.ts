@@ -1,7 +1,7 @@
-import {Matrix} from "@/tetris_model/util";
-import {Vec2} from "@/tetris_model/Vec2";
-import {Cell} from "@/tetris_model/Cell";
-import {Figure} from "@/tetris_model/Figure";
+import {Matrix} from "./util";
+import {Vec2} from "./Vec2";
+import {Cell} from "./Cell";
+import {Figure} from "./Figure";
 
 export class Field {
     height: number;
@@ -39,16 +39,14 @@ export class Field {
     place(fig: Figure) {
         if (!this.canPlace(fig))
             throw new Error(`Incorrect/occupied position`);
-        for (let c of fig.cells) {
+        for (let c of fig.cells)
             this.mat[c.pos.y][c.pos.x] = c;
-        }
     }
 
     // Очищение ряда клеток
     clearRow(row: number) {
-        for (let col = 0; col < this.width; col++) {
+        for (let col = 0; col < this.width; col++)
             this.mat[row][col] = null;
-        }
     }
 
     // Падение ряда на следующий ряд

@@ -1,4 +1,4 @@
-import {Figure} from "@/tetris_model/Figure";
+import {Figure} from "./Figure";
 
 // Кортеж двух чисел
 export type Num2Tuple = [number, number];
@@ -6,18 +6,13 @@ export type Num2Tuple = [number, number];
 // Шаблон матрицы
 export type Matrix<T> = Array<Array<T>>;
 
-// Матрицы поворота на 90
+// Матрица поворота на 90
 export const rotMat90: Matrix<number> = [
     [0, -1],
     [1, 0]
 ];
-// и -90 градусов
-export const rotMat270: Matrix<number> = [
-    [0, 1],
-    [-1, 0]
-];
 
-// Возможные дайствия с фигурой
+// Возможные действия с фигурой
 export enum Actions {
     LEFT, RIGHT,
     ROTATE, DOWN

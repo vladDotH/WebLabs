@@ -1,14 +1,14 @@
-import {Actions, rotMat270, rotMat90} from "@/tetris_model/util";
-import {Vec2} from "@/tetris_model/Vec2";
-import {Figure} from "@/tetris_model/Figure";
-import {Field} from "@/tetris_model/Field";
+import {Actions, rotMat90} from "./util";
+import {Vec2} from "./Vec2";
+import {Figure} from "./Figure";
+import {Field} from "./Field";
 
 const _ = require('lodash');
 
 // Интерфейс передачи состояния модели
 export interface GameViewState {
-    field: Field;
-    figure?: Figure;
+    field?: Field;
+    figure?: Figure | null;
 }
 
 export class Game {

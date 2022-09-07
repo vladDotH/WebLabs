@@ -11,7 +11,7 @@ export default class GameView extends Vue {
 </script>
 
 <template>
-  <Tetris :width="10" :height="20"/>
+  <Tetris/>
 </template>
 
 <style scoped>

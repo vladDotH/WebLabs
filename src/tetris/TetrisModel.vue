@@ -5,7 +5,7 @@ import {Actions, FiguresFabric, Game, GameViewState} from './index'
 const _ = require('lodash')
 
 @Component
-export default class TetrisModelComponent extends Vue {
+export default class TetrisModel extends Vue {
   @Prop() width!: number;
   @Prop() height!: number;
 
@@ -20,8 +20,10 @@ export default class TetrisModelComponent extends Vue {
   }
 
   spawnFigure() {
-    if (this.game!.shiftFigure())
+    if (this.game!.shiftFigure()) {
       this.modelChange();
+      this.nextChange();
+    }
   }
 
   tick() {
@@ -38,7 +40,12 @@ export default class TetrisModelComponent extends Vue {
 
   @Emit('model-change')
   private modelChange(): GameViewState {
-    return {field: this.game!.field, figure: this.game!.activeFigure} as GameViewState;
+    return {field: this.game?.field, figure: this.game?.activeFigure};
+  }
+
+  @Emit('next-change')
+  private nextChange(): GameViewState {
+    return {figure: this.game.figuresQueue[this.game.figuresQueue.length - 1]};
   }
 
   move(act: Actions) {
@@ -55,11 +62,6 @@ export default class TetrisModelComponent extends Vue {
 </script>
 
 <template>
-  <div>
-    <p v-for="fig of game.figuresQueue">
-      figure: {{ JSON.stringify(fig) }}
-    </p>
-  </div>
 </template>
 
 <style scoped>

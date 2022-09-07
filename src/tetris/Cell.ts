@@ -1,4 +1,4 @@
-import {Vec2} from "@/tetris_model/Vec2";
+import {Vec2} from "./Vec2";
 
 // Клетка на поле (или в фигуре)
 export class Cell {
