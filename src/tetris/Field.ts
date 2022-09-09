@@ -3,6 +3,8 @@ import {Vec2} from "./Vec2";
 import {Cell} from "./Cell";
 import {Figure} from "./Figure";
 
+const _ = require('lodash');
+
 export class Field {
     height: number;
     width: number;
@@ -11,12 +13,9 @@ export class Field {
     constructor(h: number, w: number) {
         this.height = h;
         this.width = w;
-        this.mat = [];
+        this.mat = Array(h);
         for (let i = 0; i < h; i++) {
-            this.mat.push([]);
-            for (let j = 0; j < w; j++) {
-                this.mat[i].push(null);
-            }
+            this.mat[i] = _.fill(Array(w), null);
         }
     }
 
@@ -38,9 +37,20 @@ export class Field {
     // Помещение фигуры (её клеток) на поле
     place(fig: Figure) {
         if (!this.canPlace(fig))
-            throw new Error(`Incorrect/occupied position`);
+            throw new Error(`Incorrect/occupied position; figure: ${JSON.stringify(fig)}`);
         for (let c of fig.cells)
             this.mat[c.pos.y][c.pos.x] = c;
+    }
+
+    // Получение заполненных фигурой рядов
+    checkRows(figure: Figure): number[] {
+        return _.uniq(figure.cells.map(c => c.pos.y))
+            .filter(
+                (y: number) =>
+                    this.mat[y].every(
+                        cell => cell != null
+                    )
+            );
     }
 
     // Очищение ряда клеток
@@ -53,6 +63,7 @@ export class Field {
     fallDownRow(i: number) {
         for (let j = 0; j < this.width; j++) {
             if (this.mat[i + 1][j] == null && this.mat[i][j] != null) {
+                this.mat[i][j]!.pos.y += 1;
                 this.mat[i + 1][j] = this.mat[i][j];
                 this.mat[i][j] = null;
             }

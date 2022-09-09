@@ -1,7 +1,7 @@
 <script lang="ts">
-import {Component, Prop, Vue} from 'vue-property-decorator';
+import {Component, Vue} from 'vue-property-decorator';
 import TetrisModel from "@/tetris/TetrisModel.vue";
-import {GameViewState, Actions} from "@/tetris";
+import {Actions} from "@/tetris";
 import TetrisView from "@/tetris/TetrisView.vue";
 
 const _ = require('lodash')
@@ -19,8 +19,10 @@ export default class Tetris extends Vue {
   }
 
   mounted() {
-    console.log(_.flatten(undefined))
+  }
 
+  f(str: string) {
+    console.log(str);
   }
 }
 
@@ -39,6 +41,8 @@ export default class Tetris extends Vue {
         ref="model"
         @model-change="$refs.view.update($event)"
         @next-change="$refs.next.update($event)"
+        @score-change="f($event)"
+        @game-over="f('game over')"
     />
 
     <TetrisView ref="view" :width="10" :height="20" :cell-size="30"/>
@@ -49,7 +53,8 @@ export default class Tetris extends Vue {
     </p>
 
     <button @click="$refs.model.generateFigure()">generate</button>
-    <button @click="$refs.model.spawnFigure()">spawn</button>
+    <button @click="$refs.model.resume()">start</button>
+    <button @click="$refs.model.pause()">pause</button>
     <button>focus</button>
   </section>
 </template>
@@ -57,5 +62,9 @@ export default class Tetris extends Vue {
 <style scoped>
 section {
   padding: 0 10vw;
+}
+
+button {
+  padding: 20px;
 }
 </style>

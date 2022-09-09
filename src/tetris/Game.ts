@@ -3,30 +3,30 @@ import {Vec2} from "./Vec2";
 import {Figure} from "./Figure";
 import {Field} from "./Field";
 
-const _ = require('lodash');
-
 // Интерфейс передачи состояния модели
 export interface GameViewState {
-    field?: Field;
-    figure?: Figure | null;
+    readonly field?: Field;
+    readonly figure?: Figure | null;
+}
+
+// Результат перемещения фигуры
+export enum MoveResult {
+    CHANGE, CHANGELESS, PLACE, EMPTY
 }
 
 export class Game {
+    // Поле клеток
     field: Field;
     // Управляемая фигура
     activeFigure: Figure | null;
-    // Поле статичных клеток
     figuresQueue: Array<Figure> = [];
+    filledRows: number[] = [];
     startSpeed: number;
 
     constructor(h: number, w: number, startSpeed: number = 1500) {
         this.field = new Field(h, w);
         this.activeFigure = null;
         this.startSpeed = startSpeed;
-    }
-
-    get speed(): number {
-        return this.startSpeed;
     }
 
     // Помещение фигуры в очередь
@@ -53,64 +53,72 @@ export class Game {
             return false;
     }
 
-    // Получение заполненных фигурой рядов
-    checkRows(figure: Figure): number[] {
-        return _.uniq(figure.cells.map(c => c.pos.y))
-            .filter(
-                (y: number) =>
-                    this.field.mat[y].every(
-                        cell => cell != null
-                    )
-            )
-            .sort();
+    // Очистка одного ряда и сдвиг вышестоящих вниз
+    private clearRow(row: number) {
+        this.field.clearRow(row);
+        for (let i = row - 1; i >= 0; --i) {
+            console.log(i)
+            this.field.fallDownRow(i);
+        }
+    }
+
+    // Очистка всех заполненных рядов
+    clearFilledRows(): number {
+        let rows = this.filledRows.length;
+        this.filledRows
+            .sort((a, b) => a - b)
+            .forEach(row => this.clearRow(row));
+        this.filledRows = [];
+        return rows;
     }
 
     // Движение фигуры вниз
-    private moveDown(): boolean {
+    private moveDown(): MoveResult {
         if (this.field.canPlace(this.activeFigure!, Vec2.down())) {
             this.activeFigure!.translate(Vec2.down());
+            return MoveResult.CHANGE;
         } else {
             this.field.place(this.activeFigure!);
+            this.filledRows.push(...this.field.checkRows(this.activeFigure!));
             this.activeFigure = null;
+            return MoveResult.PLACE;
         }
-        return true;
     }
 
     // Движение фигуры вправо/влево
-    private moveLR(act: Actions.LEFT | Actions.RIGHT): boolean {
+    private moveLR(act: Actions.LEFT | Actions.RIGHT): MoveResult {
         let tr: Vec2 = act == Actions.LEFT ? Vec2.left() : Vec2.right();
         if (this.field.canPlace(this.activeFigure!, tr)) {
             this.activeFigure!.translate(tr);
-            return true;
+            return MoveResult.CHANGE;
         }
-        return false;
+        return MoveResult.CHANGELESS;
     }
 
     // Поворот фигуры
-    private rotate(): boolean {
+    private rotate(): MoveResult {
         let copy = this.activeFigure!.copy();
         this.activeFigure!.rotate(rotMat90);
-        if (this.field.canPlace(this.activeFigure!))
-            return true
-        else {
+        if (!this.field.canPlace(this.activeFigure!)) {
             let minPos = this.activeFigure!.min(),
                 maxPos = this.activeFigure!.max();
             // Если фигура вышла за пределы поля, она перемещается обратно в стакан,
-            // Иначе поворот отменяется
             if (minPos.x < 0 || maxPos.x >= this.field.width) {
                 this.activeFigure!.translate(new Vec2([
                     minPos.x < 0 ? -minPos.x : this.field.width - 1 - maxPos.x, 0
                 ]));
-                return true;
-            } else {
-                this.activeFigure = copy;
             }
-            return false;
+            // Если не удалось её выровнять, поворот отменяется
+            if (!this.field.canPlace(this.activeFigure!)) {
+                this.activeFigure = copy;
+                return MoveResult.CHANGELESS;
+            }
         }
+        return MoveResult.CHANGE;
     }
 
     // Интерфейс управления фигурой
-    move(act: Actions): boolean {
+    move(act: Actions): MoveResult {
         if (this.activeFigure != null) {
             switch (act) {
                 case Actions.DOWN:
@@ -122,6 +130,6 @@ export class Game {
                     return this.rotate();
             }
         }
-        return false;
+        return MoveResult.EMPTY;
     }
 }

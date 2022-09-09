@@ -1,7 +1,6 @@
 import {Matrix, rotMat90, Num2Tuple} from "./util";
 import {Vec2} from "./Vec2";
 import {Cell} from "./Cell";
-import {Field} from "./Field";
 
 // Фигура на поле (текущая управляемая фигура)
 export class Figure {

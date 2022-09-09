@@ -33,6 +33,7 @@ export class Vec2 {
         return new Vec2([Math.round(this.x), Math.round(this.y)]);
     }
 
+    // Преобразование к кортежу
     tuple(): Num2Tuple {
         return [this.x, this.y];
     }
