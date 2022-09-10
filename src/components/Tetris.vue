@@ -1,7 +1,7 @@
 <script lang="ts">
 import {Component, Vue} from 'vue-property-decorator';
-import TetrisModel from "@/tetris/TetrisModel.vue";
 import {Actions} from "@/tetris";
+import TetrisModel from "@/tetris/TetrisModel.vue";
 import TetrisView from "@/tetris/TetrisView.vue";
 
 const _ = require('lodash')
@@ -11,6 +11,7 @@ const _ = require('lodash')
 })
 export default class Tetris extends Vue {
   readonly Actions = Actions;
+  size: number = 20;
 
   $refs!: {
     model: TetrisModel,
@@ -45,7 +46,7 @@ export default class Tetris extends Vue {
         @game-over="f('game over')"
     />
 
-    <TetrisView ref="view" :width="10" :height="20" :cell-size="30"/>
+    <TetrisView ref="view" :width="10" :height="20" :cell-size="size"/>
 
     <p style="display: flex; justify-content: center">
       <span>Next:</span>

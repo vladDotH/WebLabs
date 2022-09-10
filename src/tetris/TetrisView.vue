@@ -1,6 +1,6 @@
 <script lang="ts">
-import {Component, Emit, Prop, Vue} from 'vue-property-decorator';
-import {GameViewState} from "@/tetris/Game";
+import {Component, Prop, Vue} from 'vue-property-decorator';
+import {GameViewState} from "@/tetris/TetrisModel.vue";
 import {Cell} from "@/tetris/Cell";
 
 const _ = require('lodash')
@@ -22,22 +22,30 @@ export default class TetrisView extends Vue {
   update(state: GameViewState) {
     for (let cell of this.$refs.cells) {
       cell.style.backgroundColor = this.color;
+      cell.style.opacity = '1';
     }
+
+    state.hint?.cells.forEach(cell => {
+      this.$refs.cells[cell.pos.y * this.width + cell.pos.x].style.backgroundColor = cell.color;
+      this.$refs.cells[cell.pos.y * this.width + cell.pos.x].style.opacity = '0.5';
+    });
+
     _.flatten(state.field?.mat)
         .concat(state.figure?.cells)
         .forEach(
             (cell: Cell | null) => {
-              if (cell != null)
+              if (cell != null) {
                 this.$refs.cells[cell.pos.y * this.width + cell.pos.x].style.backgroundColor = cell.color;
+                this.$refs.cells[cell.pos.y * this.width + cell.pos.x].style.opacity = '1';
+              }
             }
         );
   }
 }
-
 </script>
 
 <template>
-  <section ref="field">
+  <section class="field" ref="field">
     <div
         class="row"
         v-for="h in height"
@@ -53,7 +61,7 @@ export default class TetrisView extends Vue {
 </template>
 
 <style scoped>
-section {
+.field {
   display: flex;
   flex-direction: column;
 }
@@ -64,6 +72,6 @@ section {
 
 .cell {
   border: solid #777;
-  transition: all linear 0.1s;
+  transition: all linear 0.05s;
 }
 </style>

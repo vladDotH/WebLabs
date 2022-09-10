@@ -1,103 +1,136 @@
 <script lang="ts">
 import {Component, Emit, Prop, Vue} from 'vue-property-decorator';
-import {Actions, FiguresFabric, Game, GameViewState, MoveResult} from './index'
+import {Actions, Field, Figure, FiguresFabric, Game, MoveResult} from './index'
 
-const _ = require('lodash')
+const _ = require('lodash');
+
+// Интерфейс передачи состояния отображениям
+export interface GameViewState {
+  readonly field?: Field;
+  readonly figure?: Figure | null;
+  readonly hint?: Figure | null;
+}
+
+// Звуковые события
+export enum SoundEvents {
+  MOVE, PLACE, CLEAR, OVER
+}
 
 @Component
 export default class TetrisModel extends Vue {
   @Prop() width!: number;
   @Prop() height!: number;
+  // Базовый интервал падения
   @Prop({default: 1500}) defaultInterval!: number;
-  @Prop({default: 0.5}) intervalScoreMultiplier!: number;
+  // Множитель очков для вычитания из базового интервала
+  @Prop({default: 0.3}) intervalScoreMultiplier!: number;
+  // Кол-во очков за заполненный ряд
   @Prop({default: 100}) rowScore!: number;
 
-  game!: Game;
-  timerId: number = 0;
-  score: number = 0;
+  private game!: Game;
+  private timerId: number = 0;
+  private score: number = 0;
+  private paused: boolean = true;
 
   created() {
     this.game = new Game(this.height, this.width);
-  }
-
-  mounted() {
     this.generateFigure();
   }
 
+  // Вычисление интервала падения с учётом очков
   getInterval(): number {
     return this.defaultInterval - this.score * this.intervalScoreMultiplier;
   }
 
-  generateFigure() {
+  // Помещение случайной фигуры в очередь
+  private generateFigure() {
     this.game!.pushFigure(_.sample(FiguresFabric)())
   }
 
-  spawnFigure(): boolean {
+  // Спавн первой фигуры из очереди
+  private spawnFigure(): boolean {
     if (this.game!.shiftFigure()) {
-      this.modelChange();
-      this.nextChange();
+      this.modelChangeEmit();
+      this.nextChangeEmit();
       return true;
     }
     return false;
   }
 
-  pause() {
-    console.log('stop timer: ', this.timerId);
-    clearTimeout(this.timerId);
-  }
-
+  // Авто-движение вниз
   private tick() {
     this.timerId = setTimeout(this.tick, this.getInterval());
     this.move(Actions.DOWN);
-    console.log('tick timer: ', this.timerId);
   }
 
+  // Остановка игры
+  pause() {
+    this.paused = true;
+    clearTimeout(this.timerId);
+  }
+
+  // Возобновление/старт игры
   resume() {
+    this.paused = false;
     this.timerId = setTimeout(this.tick, this.getInterval());
-    console.log('set timer: ', this.timerId);
   }
 
-  @Emit('model-change')
-  private modelChange(): GameViewState {
-    return {field: this.game.field, figure: this.game.activeFigure};
-  }
-
-  @Emit('next-change')
-  private nextChange(): GameViewState {
-    return {figure: this.game.figuresQueue[this.game.figuresQueue.length - 1]};
-  }
-
-  @Emit('score-change')
-  private scoreChange(): number {
-    return this.score;
-  }
-
-  @Emit('game-over')
-  private gameOver(): boolean {
-    return true;
-  }
-
+  // Интерфейс управления игрой
   move(act: Actions) {
+    if (this.paused)
+      return;
+
     let res: MoveResult = this.game!.move(act);
     switch (res) {
       case MoveResult.PLACE:
         let rows = this.game.clearFilledRows();
+        this.soundEmit(SoundEvents.PLACE);
         if (rows) {
           this.score += Math.round(this.rowScore * rows * (1 + rows / 10));
-          this.scoreChange();
+          this.scoreChangeEmit();
+          this.soundEmit(SoundEvents.CLEAR);
         }
-        // размещение влечёт за собой изменение модели
+        // размещение влечёт за собой изменение модели ->
       case MoveResult.CHANGE:
-        this.modelChange();
+        this.modelChangeEmit();
+        this.soundEmit(SoundEvents.MOVE);
         break;
       case MoveResult.EMPTY:
         this.generateFigure();
-        if(!this.spawnFigure()) {
+        if (!this.spawnFigure()) {
           this.pause();
-          this.gameOver();
+          this.gameOverEmit();
+          this.soundEmit(SoundEvents.OVER);
         }
         break;
     }
+  }
+
+  /*События игры*/
+
+  @Emit('model-change')
+  private modelChangeEmit(): GameViewState {
+    return {field: this.game.field, figure: this.game.activeFigure, hint: this.game.getHint()};
+  }
+
+  @Emit('next-change')
+  private nextChangeEmit(): GameViewState {
+    return {figure: this.game.figuresQueue[0]};
+  }
+
+  @Emit('score-change')
+  private scoreChangeEmit(): number {
+    return this.score;
+  }
+
+  @Emit('game-over')
+  private gameOverEmit(): boolean {
+    return true;
+  }
+
+  @Emit('sound-event')
+  private soundEmit(sound: SoundEvents): SoundEvents {
+    return sound;
   }
 }
 </script>

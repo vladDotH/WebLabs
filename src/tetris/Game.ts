@@ -3,12 +3,6 @@ import {Vec2} from "./Vec2";
 import {Figure} from "./Figure";
 import {Field} from "./Field";
 
-// Интерфейс передачи состояния модели
-export interface GameViewState {
-    readonly field?: Field;
-    readonly figure?: Figure | null;
-}
-
 // Результат перемещения фигуры
 export enum MoveResult {
     CHANGE, CHANGELESS, PLACE, EMPTY
@@ -21,12 +15,10 @@ export class Game {
     activeFigure: Figure | null;
     figuresQueue: Array<Figure> = [];
     filledRows: number[] = [];
-    startSpeed: number;
 
-    constructor(h: number, w: number, startSpeed: number = 1500) {
+    constructor(h: number, w: number) {
         this.field = new Field(h, w);
         this.activeFigure = null;
-        this.startSpeed = startSpeed;
     }
 
     // Помещение фигуры в очередь
@@ -57,7 +49,6 @@ export class Game {
     private clearRow(row: number) {
         this.field.clearRow(row);
         for (let i = row - 1; i >= 0; --i) {
-            console.log(i)
             this.field.fallDownRow(i);
         }
     }
@@ -131,5 +122,16 @@ export class Game {
             }
         }
         return MoveResult.EMPTY;
+    }
+
+    // Расчёт места падения фигуры
+    getHint(): Figure | null {
+        if (this.activeFigure) {
+            let hint = this.activeFigure.copy();
+            while (this.field.canPlace(hint, Vec2.down()))
+                hint.translate(Vec2.down());
+            return hint;
+        }
+        return null;
     }
 }
