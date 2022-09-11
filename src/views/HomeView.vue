@@ -14,8 +14,10 @@ export default class HomeView extends Vue {
   }
 
   start() {
-    localStorage.setItem('tetris.name', this.name);
-    this.$router.push('game');
+    if (this.name.length > 0) {
+      localStorage.setItem('tetris.name', this.name);
+      this.$router.push('game');
+    }
   }
 
   focus() {
