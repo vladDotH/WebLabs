@@ -1,24 +1,28 @@
-import Vue from 'vue'
-import VueRouter, {RouteConfig} from 'vue-router'
-import WelcomeView from "@/views/WelcomeView.vue";
+import Vue from 'vue';
+import VueRouter, {RouteConfig} from 'vue-router';
 
-Vue.use(VueRouter)
+Vue.use(VueRouter);
 
 const routes: Array<RouteConfig> = [
     {
         path: '/',
-        name: 'welcome',
-        component: WelcomeView
+        name: 'home',
+        component: () => import('../views/HomeView.vue')
     },
     {
         path: '/game',
         name: 'game',
         component: () => import('../views/GameView.vue')
+    },
+    {
+        path: '/records',
+        name: 'records',
+        component: () => import('../views/RecordsView.vue')
     }
-]
+];
 
 const router = new VueRouter({
     routes
-})
+});
 
-export default router
+export default router;

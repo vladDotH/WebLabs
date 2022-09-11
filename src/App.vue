@@ -1,32 +1,37 @@
 <template>
   <div id="app">
-<!--    <nav>-->
-<!--      <router-link to="/">Home</router-link> |-->
-<!--      <router-link to="/about">About</router-link>-->
-<!--    </nav>-->
+    <nav>
+      <router-link to="/">Игра</router-link>
+      |
+      <router-link to="/records">Рекорды</router-link>
+    </nav>
     <router-view/>
   </div>
 </template>
 
 <style>
+body {
+  background-color: #222222
+}
+
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  font-family: "Lucida Console", sans-serif;
   text-align: center;
-  color: #2c3e50;
+  font-size: 2vw;
+  color: #dadada;
 }
 
 nav {
-  padding: 30px;
+  padding: 3vh 3vw;
 }
 
 nav a {
   font-weight: bold;
-  color: #2c3e50;
+  text-decoration: none;
+  color: inherit;
 }
 
 nav a.router-link-exact-active {
-  color: #42b983;
+  color: #44aa44;
 }
 </style>

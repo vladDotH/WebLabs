@@ -16,6 +16,7 @@ export enum SoundEvents {
   MOVE, PLACE, CLEAR, OVER
 }
 
+// Компонент логики игры
 @Component
 export default class TetrisModel extends Vue {
   @Prop() width!: number;
@@ -65,14 +66,19 @@ export default class TetrisModel extends Vue {
 
   // Остановка игры
   pause() {
-    this.paused = true;
-    clearTimeout(this.timerId);
+    if (!this.paused) {
+      this.paused = true;
+      clearTimeout(this.timerId);
+    }
   }
 
   // Возобновление/старт игры
   resume() {
-    this.paused = false;
-    this.timerId = setTimeout(this.tick, this.getInterval());
+    if (this.paused) {
+      this.paused = false;
+      clearTimeout(this.timerId);
+      this.timerId = setTimeout(this.tick, this.getInterval());
+    }
   }
 
   // Интерфейс управления игрой
@@ -86,11 +92,12 @@ export default class TetrisModel extends Vue {
         let rows = this.game.clearFilledRows();
         this.soundEmit(SoundEvents.PLACE);
         if (rows) {
-          this.score += Math.round(this.rowScore * rows * (1 + rows / 10));
+          this.score += Math.round(this.rowScore * rows * (1 + (rows - 1) / 10));
           this.scoreChangeEmit();
           this.soundEmit(SoundEvents.CLEAR);
         }
-        // размещение влечёт за собой изменение модели ->
+        this.modelChangeEmit();
+        break
       case MoveResult.CHANGE:
         this.modelChangeEmit();
         this.soundEmit(SoundEvents.MOVE);
@@ -99,8 +106,10 @@ export default class TetrisModel extends Vue {
         this.generateFigure();
         if (!this.spawnFigure()) {
           this.pause();
-          this.gameOverEmit();
           this.soundEmit(SoundEvents.OVER);
+          this.gameOverEmit();
+        } else {
+          this.soundEmit(SoundEvents.MOVE);
         }
         break;
     }
@@ -110,7 +119,11 @@ export default class TetrisModel extends Vue {
 
   @Emit('model-change')
   private modelChangeEmit(): GameViewState {
-    return {field: this.game.field, figure: this.game.activeFigure, hint: this.game.getHint()};
+    return {
+      field: this.game.field, figure:
+      this.game.activeFigure,
+      hint: this.game.getHint()
+    };
   }
 
   @Emit('next-change')
