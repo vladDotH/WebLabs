@@ -61,8 +61,8 @@ export default class Tetris extends Vue {
     this.over = true;
     let records = JSON.parse(localStorage.getItem('tetris.records') ?? '{"records":[]}') as Records;
     let prev = records.records.find(o => o[0] == this.playerName);
-    if (prev && this.score > prev[1])
-      prev[1] = this.score;
+    if (prev)
+      prev[1] = Math.max(this.score, prev[1]);
     else
       records.records.push([this.playerName, this.score]);
     localStorage.setItem('tetris.records', JSON.stringify(records));
