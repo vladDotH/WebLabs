@@ -35,13 +35,14 @@ export default class Tetris extends Vue {
       this.$refs.model.move(e.keyCode - 37); // сдвиг кода -37
   }
 
-  private onResize(e: UIEvent) {
+  private onResize(e?: UIEvent) {
     this.cellSize = 30 * window.innerWidth / 1920;
   }
 
   mounted() {
     window.addEventListener('keydown', this.onKeyDown);
     window.addEventListener('resize', this.onResize);
+    this.onResize();
   }
 
   beforeDestroy() {
