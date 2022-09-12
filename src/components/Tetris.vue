@@ -20,6 +20,7 @@ export default class Tetris extends Vue {
   sounds: string[] =
       ['move', 'place', 'clear', 'game_over']
           .map(name => require(`@/sounds/${name}.wav`));
+
   score: number = 0;
   over: boolean = false;
   playerName: string = localStorage.getItem('tetris.name') ?? '';
@@ -45,12 +46,12 @@ export default class Tetris extends Vue {
     this.onResize();
   }
 
-  beforeDestroy() {
+  private beforeDestroy() {
     window.addEventListener('resize', this.onResize);
     window.removeEventListener('keydown', this.onKeyDown);
   }
 
-  playSound(event: SoundEvents) {
+  private playSound(event: SoundEvents) {
     try {
       new Audio(this.sounds[event]).play();
     } catch (e) {
@@ -58,7 +59,7 @@ export default class Tetris extends Vue {
     }
   }
 
-  gameOver() {
+  private gameOver() {
     this.over = true;
     let records = JSON.parse(localStorage.getItem('tetris.records') ?? '{"records":[]}') as Records;
     let prev = records.records.find(o => o[0] == this.playerName);
