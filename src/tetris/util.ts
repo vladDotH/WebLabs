@@ -1,4 +1,5 @@
 import {Figure} from "./Figure";
+import {Field} from "@/tetris/Field";
 
 // Кортеж двух чисел
 export type Num2Tuple = [number, number];
@@ -15,6 +16,23 @@ export const rotMat90: Matrix<number> = [
 // Возможные действия с фигурой
 export enum Actions {
     LEFT, ROTATE, RIGHT, DOWN
+}
+
+// Результат перемещения фигуры
+export enum MoveResult {
+    CHANGE, CHANGELESS, PLACE, EMPTY
+}
+
+// Интерфейс передачи состояния отображениям
+export interface GameViewState {
+    readonly field?: Field;
+    readonly figure?: Figure | null;
+    readonly hint?: Figure | null;
+}
+
+// Звуковые события
+export enum SoundEvents {
+    MOVE, PLACE, CLEAR, OVER
 }
 
 // Фабричные функции стандартных фигур

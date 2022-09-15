@@ -27,24 +27,21 @@ export default class RecordsView extends Vue {
   </section>
 </template>
 
-<style scoped>
-.main {
-  margin-top: 5vh;
-  padding: 0 10vw;
-}
+<style scoped lang="scss">
+@import "../styles/main";
 
 table {
   text-align: center;
   margin: auto;
   border-spacing: 1vh;
-}
 
-.name {
-  color: #44aa44;
-}
+  .name {
+    color: $primary;
+  }
 
-.score {
-  font-weight: bold;
-  color: #ee99ee;
+  .score {
+    font-weight: bold;
+    color: $secondary;
+  }
 }
 </style>

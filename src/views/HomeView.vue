@@ -33,53 +33,26 @@ export default class HomeView extends Vue {
       <label>Введите имя игрока >>>&nbsp;</label>
       <input v-model="name" autofocus ref="input">
     </div>
-    <button @click="start" :class="{'active' : name.length > 0}">
+    <button @click="start" class="button" :class="{'active' : name.length > 0}">
       Начать игру
     </button>
   </section>
 </template>
 
-<style scoped>
-.main {
-  padding: 0 10vw;
+<style scoped lang="scss">
+@import "../styles/main";
+
+.main > * {
   margin-top: 5vh;
 }
 
-.main > * {
-  margin-top: 2vh;
-}
-
-button, input {
-  font: inherit;
-}
-
 input {
-  color: #44aa44;
+  font: inherit;
+  color: $primary;
   border: none;
   background: transparent;
-  caret-color: white;
+  caret-color: $text-color;
   outline: none;
 }
 
-button {
-  padding: 0.5% 1%;
-  border: none;
-  color: #ee99ee;
-  background: transparent;
-  opacity: 0.5;
-  transition: all ease-in-out 0.3s;
-}
-
-.active {
-  opacity: 1;
-  text-decoration: underline #ee99ee;
-}
-
-.active:hover {
-  cursor: pointer;
-}
-
-.active:active {
-  transform: scale(0.98);
-}
 </style>

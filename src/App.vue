@@ -9,29 +9,33 @@
   </div>
 </template>
 
-<style>
+<style lang="scss">
+@import "styles/main";
+
 body {
-  background-color: #222222
+  background-color: $bg-color;
 }
 
 #app {
   font-family: "Lucida Console", sans-serif;
   text-align: center;
   font-size: 2vw;
-  color: #dadada;
+  color: $text-color;
+  padding: 2vh 10vw;
 }
 
 nav {
   padding: 3vh 3vw;
-}
-
-nav a {
+  margin-bottom: 5vh;
   font-weight: bold;
-  text-decoration: none;
-  color: inherit;
-}
 
-nav a.router-link-exact-active {
-  color: #44aa44;
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  a.router-link-exact-active {
+    color: $primary;
+  }
 }
 </style>

@@ -2,13 +2,12 @@ import {Matrix} from "./util";
 import {Vec2} from "./Vec2";
 import {Cell} from "./Cell";
 import {Figure} from "./Figure";
-
-const _ = require('lodash');
+import * as _ from 'lodash'
 
 export class Field {
-    height: number;
-    width: number;
-    mat: Matrix<Cell | null>;
+    readonly height: number;
+    readonly width: number;
+    readonly mat: Matrix<Cell | null>;
 
     constructor(h: number, w: number) {
         this.height = h;

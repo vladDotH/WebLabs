@@ -4,10 +4,10 @@ import {Cell} from "./Cell";
 
 // Фигура на поле (текущая управляемая фигура)
 export class Figure {
-    cells: Cell[];
+    readonly cells: Cell[];
     // Центр фигуры задаёт ось её вращения
     center: Vec2;
-    color: string;
+    readonly color: string;
 
     constructor(cells: Array<Num2Tuple>, center: Num2Tuple, color: string) {
         this.cells = cells.map(v => new Cell(new Vec2(v), color));
