@@ -21,10 +21,10 @@
 </template>
 
 <script lang="ts">
-import {Component, Prop, Vue} from 'vue-property-decorator';
+import {Component, Prop, Vue} from "vue-property-decorator";
 import {GameViewState} from "@/tetris/util";
 import {Cell} from "@/tetris/Cell";
-import * as _ from 'lodash'
+import * as _ from "lodash"
 
 // Компонент отображения игры / фигур
 @Component

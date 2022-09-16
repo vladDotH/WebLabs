@@ -49,7 +49,7 @@
 </template>
 
 <script lang="ts">
-import {Component, Emit, Vue} from 'vue-property-decorator';
+import {Component, Emit, Vue} from "vue-property-decorator";
 import {SoundEvents} from "@/tetris";
 import TetrisModel from "@/tetris/TetrisModel.vue";
 import TetrisView from "@/tetris/TetrisView.vue";

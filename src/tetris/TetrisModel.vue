@@ -2,9 +2,9 @@
 </template>
 
 <script lang="ts">
-import {Component, Emit, Prop, Vue} from 'vue-property-decorator';
-import {Actions, SoundEvents, GameViewState, FiguresFabric, Game, MoveResult} from './index'
-import * as _ from 'lodash'
+import {Component, Emit, Prop, Vue} from "vue-property-decorator";
+import {Actions, SoundEvents, GameViewState, FiguresFabric, Game, MoveResult} from "./index"
+import * as _ from "lodash"
 
 // Компонент логики игры
 @Component

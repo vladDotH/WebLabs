@@ -1,26 +1,26 @@
 <script lang="ts">
-import {Component, Vue} from 'vue-property-decorator';
+import {Component, Vue} from "vue-property-decorator";
 
 @Component
 export default class HomeView extends Vue {
-  name: string = '';
+  private name: string = '';
 
   $refs!: {
     input: HTMLInputElement;
   }
 
-  mounted() {
+  private mounted() {
     this.name = localStorage.getItem('tetris.name') ?? '';
   }
 
-  start() {
+  private start() {
     if (this.name.length > 0) {
       localStorage.setItem('tetris.name', this.name);
       this.$router.push('game');
     }
   }
 
-  focus() {
+  private focus() {
     this.$refs.input.focus();
   }
 }

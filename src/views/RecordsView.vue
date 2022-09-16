@@ -1,12 +1,12 @@
 <script lang="ts">
-import {Component, Vue} from 'vue-property-decorator';
+import {Component, Vue} from "vue-property-decorator";
 import {Records} from "@/components/Tetris.vue";
 
 @Component
 export default class RecordsView extends Vue {
-  records!: Records;
+  private records!: Records;
 
-  created() {
+  private created() {
     this.records = JSON.parse(localStorage.getItem('tetris.records') ?? '{"records":[]}') as Records;
     this.records.records.sort((a, b) => b[1] - a[1]);
   }
