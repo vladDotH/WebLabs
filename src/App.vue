@@ -1,41 +1,55 @@
 <template>
-  <div id="app">
-    <nav>
-      <router-link to="/">Игра</router-link>
-      |
-      <router-link to="/records">Рекорды</router-link>
-    </nav>
-    <router-view/>
+  <div id="app" class="container p-5">
+    <label for="formFile" class="form-label">Input file</label>
+    <input class="form-control" type="file" id="formFile" ref="fileInput" />
+    <button class="btn btn-warning mt-3" ref="btn" @click="f">Загрузка</button>
+    <hr />
+    <img class="m-5" :src="imgSrc" alt="Image" />
+    <hr />
+    <img class="m-5" src="http://localhost:3000/api/img" alt="Image2" />
   </div>
 </template>
 
-<style lang="scss">
-@import "styles/main";
+<script lang="ts">
+import { Component, Vue } from "vue-property-decorator";
+import axios from "axios";
 
-body {
-  background-color: $bg-color;
+@Component
+export default class App extends Vue {
+  $refs!: {
+    btn: HTMLButtonElement;
+    fileInput: HTMLInputElement;
+  };
+
+  imgSrc = "";
+
+  f() {
+    if (this.$refs.fileInput.files?.length) {
+      let file: File = this.$refs.fileInput?.files[0];
+      console.log(file);
+      this.imgSrc = URL.createObjectURL(file);
+      console.log(this.imgSrc);
+      let data: FormData = new FormData();
+      data.append("msg", "msg");
+      data.append("file", file);
+
+      axios
+        .post("http://localhost:3000/api", data, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((res) => {
+          console.log(res);
+        });
+    }
+  }
 }
+</script>
+
+<style lang="scss">
+@import "bootstrap/scss/bootstrap";
 
 #app {
-  font-family: "Lucida Console", sans-serif;
-  text-align: center;
-  font-size: 2vw;
-  color: $text-color;
-  padding: 2vh 10vw;
-}
-
-nav {
-  padding: 3vh 3vw;
-  margin-bottom: 5vh;
-  font-weight: bold;
-
-  a {
-    text-decoration: none;
-    color: inherit;
-  }
-
-  a.router-link-exact-active {
-    color: $primary;
-  }
 }
 </style>
