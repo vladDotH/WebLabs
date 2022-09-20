@@ -6,7 +6,7 @@
     <hr />
     <img class="m-5" :src="imgSrc" alt="Image" />
     <hr />
-    <img class="m-5" src="http://localhost:3000/api/img" alt="Image2" />
+    <!--    <img class="m-5" src="http://localhost:3000/api/img" alt="Image2" />-->
   </div>
 </template>
 
@@ -23,7 +23,7 @@ export default class App extends Vue {
 
   imgSrc = "";
 
-  f() {
+  async f() {
     if (this.$refs.fileInput.files?.length) {
       let file: File = this.$refs.fileInput?.files[0];
       console.log(file);
@@ -31,17 +31,20 @@ export default class App extends Vue {
       console.log(this.imgSrc);
       let data: FormData = new FormData();
       data.append("msg", "msg");
-      data.append("file", file);
+      data.append("cover", file);
 
       axios
-        .post("http://localhost:3000/api", data, {
+        .post("http://localhost:3000/api/book", data, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
         })
         .then((res) => {
           console.log(res);
-        });
+        })
+        .catch((err) => console.error(err));
+      // let a = await fetch("http://localhost:3000", { method: "get" });
+      // a.
     }
   }
 }

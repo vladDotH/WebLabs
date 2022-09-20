@@ -1,108 +1,110 @@
-// import express from "express";
-// import bodyParser from "body-parser";
-// import cors from "cors";
-// import multer from "multer";
-// import fs from "fs";
-// import passport from "passport";
-//
-// const upload = multer({ dest: "uploads/" });
-// const app = express();
-//
-// const port = 3000;
-// const corsOptions = {
-//   origin: "http://localhost:8080",
-// };
-//
-// app.use(cors(corsOptions));
-// app.use(bodyParser.urlencoded({ extended: true }));
-// app.use(bodyParser.json());
-//
-// app.get("/api/img", (req, res) => {
-//   res.writeHead(200, {
-//     "Content-Type": "image/webp",
-//     "Content-Length": 0,
-//   });
-//   res.end();
-//   // const readStream = fs.createReadStream("uploads/img.webp");
-//   // readStream.pipe(res);
-// });
-//
-// app.post("/api", upload.single("file"), (req, res) => {
-//   console.log(req.body);
-//   console.log(req.file);
-//   // const data = req.body
-//   res.send("Responsed successfully");
-// });
-//
-// app.listen(port, () => {
-//   console.log("App is running at http://localhost:%d", port);
-// });
-
 import express from "express";
-import session from "express-session";
+// import session from "express-session";
 import cors from "cors";
+import fs from "fs";
+import path from "path";
 import multer from "multer";
-import passport from "./auth";
+// import passport from "./auth";
+import { Library } from "./library";
+import { BookData, RequestType } from "../api";
 
 const app = express();
 
 const host = "127.0.0.1";
 const port = 3000;
 const corsOptions = {
-  origin: "http://localhost/",
+  origin: "http://localhost:8080",
 };
-const upload = multer();
+const storagePath = "./storage";
+const upload = multer({ dest: storagePath });
+
+const library = new Library(
+  JSON.parse(
+    fs.readFileSync(path.resolve(storagePath, "library.json"), "utf-8")
+  ) as BookData[]
+);
 
 // Установка служебных middleware
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(
-  session({ secret: "@s3cR3t_K3y", resave: true, saveUninitialized: false })
-);
-app.use(passport.initialize());
-app.use(passport.session());
 
-app.get("/login", (req, res) => {
-  console.log("login get");
-  res.send("Login page. Please, authorize.");
-});
+// app.use(
+//   session({ secret: "@s3cR3t_K3y", resave: true, saveUninitialized: false })
+// );
+// app.use(passport.initialize());
+// app.use(passport.session());
 
-app.post("/login", passport.authenticate("local", {}), (req, res) => {
-  console.log("login post");
-  console.log(req.body);
-  console.log(req.user);
-  res.json({ name: "pirodr", id: 1 });
-});
+// app.get("/api/login", (req, res) => {
+//   console.log("login get");
+//   res.send("Login page. Please, authorize.");
+// });
+//
+// app.post("/api/login", (req, res) => {
+//   console.log("login post");
+//   console.log(req.body);
+//   res.json({ name: "admin", id: 1 });
+// });
 
-// Проверка авторизации
-app.use((req, res, next) => {
-  if (req.user) next();
-  else res.sendStatus(401);
-});
+// // Проверка авторизации
+// app.use((req, res, next) => {
+//   console.log("check: ", req.user);
+//   if (req.user) next();
+//   else res.sendStatus(401);
+// });
 
 // Получение списка id книг
 app.get("/api/books", (req, res) => {
-  console.log("books");
-  res.send("Home page. You're authorized.");
+  console.log("get books", req.query.type);
+  res.json(
+    library.getAll(parseInt((req.query.type ?? "0") as string) as RequestType)
+  );
 });
 
 // Получение информации о книге
 app.get("/api/book/:id", (req, res) => {
-  console.log("book + ", req.params.id);
-  res.send("Home page. You're authorized.");
+  console.log("get book + ", req.params.id);
+  const id = parseInt(req.params.id);
+  res.json(library.get(id));
 });
 
+// Обложки книг
+app.use("/api/covers", express.static(storagePath));
+
 // Добавление книги
-app.post("/api/book", (req, res) => {
-  console.log("post book");
-  res.send("Home page. You're authorized.");
+app.post("/api/book", upload.single("cover"), (req, res) => {
+  console.log("post book", req.file);
+  console.log("body: ", req.body);
+  const book = req.body as BookData;
+  console.log(book);
+  book.cover = req.file?.filename;
+  library.add(book);
+  res.send("Post book");
 });
 
 // Обновление книги
-app.put("/book/:id", (req, res) => {
-  console.log("put book + ", req.params.id);
-  res.send("Home page. You're authorized.");
+app.put("/api/book/:id", upload.single("cover"), (req, res) => {
+  console.log("put book + ", req.params.id, req.file);
+  const id = parseInt(req.params.id),
+    book = req.body as BookData;
+  book.cover = req.file?.filename;
+  library.update(id, book);
+  res.send("Book updated");
+});
+
+// Удаление книги
+app.delete("/api/book/:id", (req, res) => {
+  console.log("delete book + ", req.params.id);
+  const id = parseInt(req.params.id);
+  const book = library.get(id);
+  if (book) {
+    if (book.cover)
+      fs.unlink(path.resolve(storagePath, book.cover), (err) => {
+        console.log("Cover deleting error", err);
+      });
+    library.delete(id);
+  }
+  res.send("Book deleted");
 });
 
 app.listen(port, host, function () {
