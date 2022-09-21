@@ -1,10 +1,10 @@
-import { BookData, RequestType } from "../api";
+import { Book, RequestType } from "../api";
 
 export class Library {
   private id = 0;
-  private books: Map<number, BookData> = new Map();
+  private books: Map<number, Book> = new Map();
 
-  constructor(init?: BookData[]) {
+  constructor(init?: Book[]) {
     if (init) for (const book of init) this.add(book);
   }
 
@@ -23,16 +23,17 @@ export class Library {
     return books;
   }
 
-  add(book: BookData) {
+  add(book: Book): number {
     book.id = this.id++;
     this.books.set(book.id, book);
+    return book.id;
   }
 
-  get(id: number): BookData | null {
+  get(id: number): Book | null {
     return this.books.get(id) ?? null;
   }
 
-  update(id: number, book: BookData): boolean {
+  update(id: number, book: Book): boolean {
     if (this.books.has(id)) {
       this.books.set(id, book);
       return true;

@@ -1,5 +1,7 @@
 <template>
-  <section></section>
+  <section>
+    <div class="redact">Редактировать</div>
+  </section>
 </template>
 
 <script lang="ts">

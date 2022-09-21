@@ -10,7 +10,9 @@
   {
     "title": "О дивный новый мир",
     "author": "Хаксли О.",
-    "year": 1932
+    "year": 1932,
+    "holder": null,
+    "returnDate": null
   },
   {
     "title": "Отцы и дети",

@@ -6,7 +6,7 @@ import path from "path";
 import multer from "multer";
 // import passport from "./auth";
 import { Library } from "./library";
-import { BookData, RequestType } from "../api";
+import { Book, BookData, Holder, RequestType } from "@/../api";
 
 const app = express();
 
@@ -21,7 +21,7 @@ const upload = multer({ dest: storagePath });
 const library = new Library(
   JSON.parse(
     fs.readFileSync(path.resolve(storagePath, "library.json"), "utf-8")
-  ) as BookData[]
+  ) as Book[]
 );
 
 // Установка служебных middleware
@@ -75,21 +75,49 @@ app.use("/api/covers", express.static(storagePath));
 app.post("/api/book", upload.single("cover"), (req, res) => {
   console.log("post book", req.file);
   console.log("body: ", req.body);
-  const book = req.body as BookData;
+  const book = req.body as Book;
   console.log(book);
   book.cover = req.file?.filename;
-  library.add(book);
-  res.send("Post book");
+  res.json(library.add(book));
 });
 
 // Обновление книги
 app.put("/api/book/:id", upload.single("cover"), (req, res) => {
   console.log("put book + ", req.params.id, req.file);
   const id = parseInt(req.params.id),
-    book = req.body as BookData;
+    book = req.body as BookData,
+    storedBook = library.get(id);
   book.cover = req.file?.filename;
-  library.update(id, book);
+
+  if (storedBook) {
+    // Удаление предыдущей обложки
+    if (book.cover) {
+      if (storedBook.cover)
+        fs.unlink(path.resolve(storagePath, storedBook.cover), (err) => {
+          console.log("Cover deleting error", err);
+        });
+      storedBook.cover = book.cover;
+    }
+    [storedBook.title, storedBook.author, storedBook.year] = [
+      book.title,
+      book.author,
+      book.year,
+    ];
+  }
+
   res.send("Book updated");
+});
+
+// Выдача/возврат книги
+app.patch("/api/book/:id", (req, res) => {
+  const data = req.body as Holder;
+  const id = parseInt(req.params.id),
+    book = library.get(id);
+  if (book) {
+    book.holder = data.holder;
+    book.returnDate = data.returnDate;
+  }
+  res.sendStatus(200);
 });
 
 // Удаление книги
