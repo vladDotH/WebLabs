@@ -89,7 +89,7 @@
           >
             Удалить
           </button>
-          <button class="btn btn-success col-2" @click="putBook">
+          <button type="button" class="btn btn-success col-2" @click="putBook">
             Обновить
           </button>
         </div>

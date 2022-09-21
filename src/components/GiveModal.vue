@@ -38,7 +38,9 @@
           >
             Отмена
           </button>
-          <button class="btn btn-info" @click="accept">Выдать</button>
+          <button type="button" class="btn btn-info" @click="accept">
+            Выдать
+          </button>
         </div>
       </div>
     </form>
