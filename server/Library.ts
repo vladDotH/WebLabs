@@ -1,7 +1,7 @@
-import { Book, RequestType } from "../api";
+import { RequestType, Book, expired } from "../api";
 
 export class Library {
-  private id = 0;
+  private id = 1;
   private books: Map<number, Book> = new Map();
 
   constructor(init?: Book[]) {
@@ -11,16 +11,14 @@ export class Library {
   getAll(req: RequestType): number[] {
     const books = Array.from(this.books.keys());
     switch (req) {
+      case RequestType.ALL:
+        return books;
       case RequestType.AVAILABLE:
         return books.filter((id) => !this.get(id)!.holder);
       case RequestType.EXPIRED:
-        return books.filter(
-          (id) =>
-            this.get(id)!.returnDate &&
-            new Date(this.get(id)!.returnDate!) < new Date()
-        );
+        return books.filter((id) => expired(this.get!(id)!));
     }
-    return books;
+    return [];
   }
 
   add(book: Book): number {
@@ -33,17 +31,7 @@ export class Library {
     return this.books.get(id) ?? null;
   }
 
-  update(id: number, book: Book): boolean {
-    if (this.books.has(id)) {
-      this.books.set(id, book);
-      return true;
-    } else return false;
-  }
-
   delete(id: number): boolean {
-    if (this.books.has(id)) {
-      this.books.delete(id);
-      return true;
-    } else return false;
+    return this.books.delete(id);
   }
 }

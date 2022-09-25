@@ -1,8 +1,9 @@
 <template>
-  <section class="modal fade" data-bs-backdrop="static" id="modal" ref="modal">
+  <section class="modal fade" data-bs-backdrop="static" ref="modal">
     <form
       class="modal-dialog modal-dialog-centered modal-sm"
-      @keydown.enter.prevent="accept"
+      @submit.prevent="accept"
+      @reset.prevent="modal.hide()"
     >
       <div class="modal-content">
         <div class="modal-header justify-content-center">
@@ -31,16 +32,8 @@
         </div>
 
         <div class="modal-footer justify-content-around">
-          <button
-            type="submit"
-            class="btn btn-secondary"
-            data-bs-dismiss="modal"
-          >
-            Отмена
-          </button>
-          <button type="button" class="btn btn-info" @click="accept">
-            Выдать
-          </button>
+          <button type="reset" class="btn btn-secondary">Отмена</button>
+          <button type="submit" class="btn btn-info">Выдать</button>
         </div>
       </div>
     </form>
@@ -50,8 +43,9 @@
 <script lang="ts">
 import { Component, Emit, Vue } from "vue-property-decorator";
 import { Modal } from "bootstrap";
-import { Holder } from "../../api";
+import { Holder } from "@/../api";
 
+// Всплывающее окно выдачи книги
 @Component
 export default class GiveModal extends Vue {
   private modal!: Modal;
@@ -83,9 +77,7 @@ export default class GiveModal extends Vue {
   private giveEvent(): Holder {
     let date = new Date();
     let days = +date.getDate() + +this.days;
-    console.log(days);
     date.setDate(days);
-    console.log("date: ", date);
     return { holder: this.name, returnDate: date.toISOString().split("T")[0] };
   }
 }

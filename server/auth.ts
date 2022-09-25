@@ -1,37 +1,66 @@
 import passport from "passport";
-import passportLocal from "passport-local";
-const localStrategy = passportLocal.Strategy;
+import { JwtFromRequestFunction, Strategy as JwtStrategy } from "passport-jwt";
+import { Router } from "express";
+import jwt from "jsonwebtoken";
+import { User } from "../api";
 
-export interface UserLocal {
-  id: number;
-  name: string;
-}
+export const authRouter = Router();
 
-// Сохранение пользователя в сессии
-passport.serializeUser((user, done) => {
-  console.log("serialize: ", user);
-  return done(null, user as UserLocal);
-});
-// Получение пользователя из сессии
-passport.deserializeUser((user: UserLocal, done) => {
-  console.log("deserialize: ", user);
-  return done(null, user);
-});
-
-const id = 0;
 // Данные для входа
-const name = "admin";
-const passwd = "admin";
+const admin: User = {
+  id: 0,
+  login: "admin",
+  pwd: "admin",
+};
 
-// Аутентификация
+// Закрытый ключ
+export const secretKey = "#S3cR3t_K3y#";
+
+// Извлечение токена из куки
+const cookieExtractor: JwtFromRequestFunction = function (req): string {
+  return req.signedCookies?.token ?? null;
+};
+
+// Проверка токена
 passport.use(
-  new localStrategy((user, password, done) => {
-    console.log("auth: ", user, password);
-    if (user !== name) return done(null, false);
-    else if (password !== passwd) return done(null, false);
-    console.log("auth success: ", user, password);
-    return done(null, { id: id, name: name } as UserLocal);
-  })
+  new JwtStrategy(
+    {
+      jwtFromRequest: cookieExtractor,
+      secretOrKey: secretKey,
+    },
+    (payload, done) => {
+      done(null, { id: admin.id, name: admin.login });
+    }
+  )
+);
+
+// Вход по логину и паролю, устанавливает токен в куки
+authRouter.post("/login", (req, res) => {
+  const data = req.body as User;
+  console.log(data);
+  if (data.login == admin.login && data.pwd == admin.pwd) {
+    const token = jwt.sign({ id: admin.id, name: admin.login }, secretKey, {
+      expiresIn: "1h",
+    });
+    res.cookie("token", token, {
+      maxAge: 60 * 60 * 1000,
+      sameSite: "none",
+      secure: true,
+      httpOnly: true,
+      signed: true,
+    });
+
+    res.sendStatus(200);
+  } else res.sendStatus(401);
+});
+
+// Точка проверки действительности токена
+authRouter.get(
+  "/login",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    res.sendStatus(200);
+  }
 );
 
 export default passport;

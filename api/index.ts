@@ -3,15 +3,22 @@ export interface Holder {
   returnDate: string | null;
 }
 
+export function expired(holder: Holder): boolean {
+  return holder.returnDate != null && new Date() > new Date(holder.returnDate);
+}
+
 export interface BookData {
   id?: number;
   title: string;
   author: string;
   year: number;
-  cover?: string;
 }
 
-export interface Book extends Holder, BookData {}
+export interface BookSchema extends Holder, BookData {}
+
+export interface Book extends BookSchema {
+  cover?: string;
+}
 
 export enum RequestType {
   ALL,
@@ -21,19 +28,19 @@ export enum RequestType {
 
 export const config = {
   server: "http://localhost:3000/api/",
-  client: "http://localhost:8080/",
+  client: "http://localhost:8080",
   reqTypeName: "type",
+  authHeader: "Authorization",
   endpoints: {
+    login: "login/",
     bookList: "books/",
     covers: "covers/",
     book: "book/",
   },
 };
 
-export const BookTemplate: Book = {
-  title: "<Название>",
-  author: "<Автор>",
-  year: 1970,
-  holder: null,
-  returnDate: null,
-};
+export interface User {
+  id?: number;
+  login: string;
+  pwd: string;
+}

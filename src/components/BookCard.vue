@@ -1,104 +1,94 @@
 <template>
-  <section>
-    <div class="book row m-3">
-      <div class="cover col-4" ref="cover" @click="toBook"></div>
-      <div class="col-8 p-4" v-if="book">
-        <h4>{{ book.title }}</h4>
-        <h5>{{ book.author }}</h5>
-        <h6 class="text-muted">{{ book.year }}</h6>
+  <div class="book row m-3" v-if="loader.book">
+    <div class="cover col-4" ref="cover" @click="toBook"></div>
+    <div class="col-8 p-4">
+      <h4>{{ loader.book.title }}</h4>
+      <h5>{{ loader.book.author }}</h5>
+      <h6 class="text-muted">{{ loader.book.year }}</h6>
 
-        <div :class="{ 'opacity-0': !book.holder }">
-          <p class="mt-4 mb-0">Взял: {{ book.holder }}</p>
-          <p>
-            Дата возврата:
-            <span
-              :class="{ 'text-danger': new Date() > new Date(book.returnDate) }"
-            >
-              {{ book.returnDate }}
-            </span>
-          </p>
-        </div>
+      <div :class="{ 'opacity-0': !loader.book.holder }">
+        <p class="mt-4 mb-0">Взял: {{ loader.book.holder }}</p>
+        <p>
+          Дата возврата:
+          <span
+            :class="{
+              'text-danger': expired(loader.book),
+            }"
+          >
+            {{ loader.book.returnDate }}
+          </span>
+        </p>
+      </div>
 
-        <div class="row justify-content-around">
-          <button
-            v-if="!book.holder"
-            class="col-4 btn btn-warning"
-            @click="bookAction(BookCardAction.GIVE)"
-          >
-            Выдать
-          </button>
-          <button
-            v-else
-            class="col-4 btn btn-info"
-            @click="bookAction(BookCardAction.RETURN)"
-          >
-            Вернуть
-          </button>
-          <button
-            class="col-4 btn btn-danger"
-            @click="bookAction(BookCardAction.DELETE)"
-          >
-            Удалить
-          </button>
-        </div>
+      <div class="row justify-content-around">
+        <button
+          v-if="!loader.book.holder"
+          class="col-5 btn btn-warning"
+          @click="action(BookAction.GIVE)"
+        >
+          Выдать
+        </button>
+        <button
+          v-else
+          class="col-5 btn btn-info"
+          @click="action(BookAction.RETURN)"
+        >
+          Вернуть
+        </button>
+        <button class="col-5 btn btn-danger" @click="action(BookAction.DELETE)">
+          Удалить
+        </button>
       </div>
     </div>
-  </section>
+  </div>
 </template>
 
 <script lang="ts">
 import { Component, Emit, Prop, Vue } from "vue-property-decorator";
-import axios from "axios";
-import { Book, config, Holder } from "@/../api";
+import { BookLoader } from "@/util/BookLoader";
+import { expired } from "@/../api";
 
-export enum BookCardAction {
+// Действия передаваемые из карточки книги
+export enum BookAction {
   DELETE,
   GIVE,
   RETURN,
 }
 
-@Component
+@Component({})
 export default class BookCard extends Vue {
-  @Prop({ type: Number }) readonly id!: number;
-  private book: Book | null = null;
-  private img?: string;
-  private BookCardAction = BookCardAction;
+  @Prop({ type: Number, required: true }) readonly id!: number;
+  private loader: BookLoader = new BookLoader(this.id);
+  private BookAction = BookAction;
+  private expired = expired;
 
   $refs!: {
     cover: HTMLDivElement;
   };
 
   private async mounted() {
-    let res = await axios.get<Book>(
-      new URL(config.endpoints.book + this.id, config.server).toString()
-    );
-    this.book = res.data;
-    console.log(this.book);
-    if (this.book.cover)
-      this.$refs.cover.style.backgroundImage = `url(${new URL(
-        config.endpoints.covers + this.book.cover,
-        config.server
-      ).toString()})`;
+    this.loader = new BookLoader(this.id);
+    await this.loader.fetch();
+    console.log(this.loader.book);
+    if (this.loader.book?.cover)
+      this.$refs.cover.style.backgroundImage = `url(${
+        this.loader.coverUrl
+      }?cache=${Date.now()})`;
   }
 
-  patch(data: Holder) {
-    if (this.book) {
-      this.book.holder = data.holder;
-      this.book.returnDate = data.returnDate;
-    }
+  // Событие карточки (удаление, выдача, возврат)
+  @Emit("action")
+  private action(act: BookAction): [BookAction, BookLoader] {
+    return [act, this.loader];
   }
 
+  // Переход на страницу редактирования книги
   private toBook() {
-    if (this.book?.id !== undefined)
+    if (this.loader?.id !== undefined)
       this.$router.push({
         name: "book",
-        params: { book_id: this.book.id.toString() },
+        params: { book_id: this.loader.id.toString() },
       });
-  }
-
-  @Emit("book-action")
-  private bookAction(act: BookCardAction): BookCardAction {
-    return act;
   }
 }
 </script>

@@ -1,12 +1,12 @@
 <template>
-  <section class="modal fade" data-bs-backdrop="static" id="modal" ref="modal">
+  <section class="modal fade" data-bs-backdrop="static" ref="modal">
     <div class="modal-dialog modal-dialog-centered modal-sm">
       <div class="modal-content text-center">
         <div class="modal-header justify-content-center">
           <h5 class="modal-title">Подтвердить удаление</h5>
         </div>
         <div class="modal-footer justify-content-around">
-          <button class="btn btn-secondary" data-bs-dismiss="modal">
+          <button class="btn btn-secondary" @click="modal.hide()">
             Отмена
           </button>
           <button class="btn btn-danger" @click="deleteEvent">Удалить</button>
@@ -20,6 +20,7 @@
 import { Component, Emit, Vue } from "vue-property-decorator";
 import { Modal } from "bootstrap";
 
+// Всплывающее окно подтверждения удаления книги
 @Component
 export default class DeleteModal extends Vue {
   private modal!: Modal;
@@ -37,9 +38,8 @@ export default class DeleteModal extends Vue {
   }
 
   @Emit("delete")
-  private deleteEvent(): boolean {
+  private deleteEvent() {
     this.modal.hide();
-    return true;
   }
 }
 </script>
