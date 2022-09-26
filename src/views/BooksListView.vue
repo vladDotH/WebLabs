@@ -25,7 +25,7 @@
     </div>
 
     <!-- Список книг -->
-    <article class="col-12 col-sm-10 col-md-8 col-lg-6 mt-4 p-0">
+    <article class="col-xs-12 col-md-10 col-lg-6 mt-4 p-0">
       <transition-group v-if="books.length" name="books">
         <BookCard
           v-for="id of books"
@@ -131,7 +131,7 @@ export default class BooksListView extends Vue {
 
 .books-enter-to,
 .books-leave {
-  max-height: 30vh;
+  max-height: 40vh;
 }
 
 .books-enter,
