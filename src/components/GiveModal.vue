@@ -67,10 +67,8 @@ export default class GiveModal extends Vue {
   }
 
   private accept() {
-    if (this.name !== "") {
-      this.modal.hide();
-      this.giveEvent();
-    }
+    this.modal.hide();
+    this.giveEvent();
   }
 
   @Emit("give")

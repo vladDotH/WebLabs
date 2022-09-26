@@ -55,6 +55,7 @@ export enum BookAction {
   RETURN,
 }
 
+// Карточка книги в списке книг
 @Component({})
 export default class BookCard extends Vue {
   @Prop({ type: Number, required: true }) readonly id!: number;
@@ -98,6 +99,7 @@ export default class BookCard extends Vue {
 
 .book {
   background-color: $bg-light;
+  box-shadow: 10px 10px 10px $bg-grey2;
 
   .cover {
     background: linear-gradient(to right bottom, $primary 25%, $secondary);

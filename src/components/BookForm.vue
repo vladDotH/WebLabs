@@ -66,6 +66,7 @@ export default class BookForm extends Vue {
     form: HTMLFormElement;
   };
 
+  // Сброс формы
   reset() {
     this.$refs.form.reset();
     [this.book.title, this.book.author, this.book.year] = ["", "", 1970];
@@ -76,11 +77,13 @@ export default class BookForm extends Vue {
     this.$refs.form.requestSubmit();
   }
 
+  // Проброс события submit формы
   private onSubmit() {
     this.submitData();
     this.submitForm();
   }
 
+  // Отправка данных в виде FormDat-ы
   @Emit("submit-form")
   private submitForm(): FormData {
     let form = new FormData();
@@ -93,6 +96,7 @@ export default class BookForm extends Vue {
     return form;
   }
 
+  // Отправка данных в виде объекта книги и файла
   @Emit("submit-data")
   private submitData(): [BookData, File | null] {
     return [this.book, this.$refs.cover.files?.item(0) ?? null];

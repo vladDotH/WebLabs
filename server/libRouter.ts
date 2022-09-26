@@ -8,6 +8,7 @@ import multer from "multer";
 export const storagePath = "./storage";
 export const uploader = multer({ dest: storagePath });
 
+// Начальная инициализация библиотеки
 const library = new Library(
   JSON.parse(
     fs.readFileSync(path.resolve(storagePath, "library.json"), "utf-8")
@@ -48,7 +49,8 @@ libRouter
   .route("/book/:id")
   .all((req, res, next) => {
     res.locals.book = library.get(parseInt(req.params.id));
-    next();
+    if (!res.locals.book) res.sendStatus(204);
+    else next();
   })
   // Получение информации о книге
   .get((req, res) => {
@@ -59,48 +61,37 @@ libRouter
     const cover = req.file?.filename,
       book = req.body as BookData;
 
-    if (res.locals.book) {
-      if (cover) {
-        // Удаление предыдущей обложки
-        if (res.locals.book.cover)
-          fs.unlink(path.resolve(storagePath, res.locals.book.cover), (err) => {
-            if (err) console.log("Cover deleting error", err);
-          });
-        res.locals.book.cover = cover;
-      }
-      [res.locals.book.title, res.locals.book.author, res.locals.book.year] = [
-        book.title,
-        book.author,
-        book.year,
-      ];
-      res.sendStatus(200);
-    } else {
-      res.sendStatus(204);
+    if (cover) {
+      // Удаление предыдущей обложки
+      if (res.locals.book.cover)
+        fs.unlink(path.resolve(storagePath, res.locals.book.cover), (err) => {
+          if (err) console.log("Cover deleting error", err);
+        });
+      res.locals.book.cover = cover;
     }
+    [res.locals.book.title, res.locals.book.author, res.locals.book.year] = [
+      book.title,
+      book.author,
+      book.year,
+    ];
+    res.sendStatus(200);
   })
   // Выдача/возврат книги
   .patch((req, res) => {
     const data = req.body as Holder;
-    if (res.locals.book) {
-      [res.locals.book.holder, res.locals.book.returnDate] = [
-        data.holder,
-        data.returnDate,
-      ];
-      res.sendStatus(200);
-    } else {
-      res.sendStatus(204);
-    }
+
+    [res.locals.book.holder, res.locals.book.returnDate] = [
+      data.holder,
+      data.returnDate,
+    ];
+    res.sendStatus(200);
   })
   // Удаление книги
   .delete((req, res) => {
-    if (res.locals.book) {
-      if (res.locals.book.cover)
-        fs.unlink(path.resolve(storagePath, res.locals.book.cover), (err) => {
-          console.log(`Cover ${res.locals.book.id} deleting error`, err);
-        });
-      library.delete(res.locals.book.id);
-      res.sendStatus(200);
-    } else {
-      res.sendStatus(204);
-    }
+    if (res.locals.book.cover)
+      fs.unlink(path.resolve(storagePath, res.locals.book.cover), (err) => {
+        console.log(`Cover ${res.locals.book.id} deleting error`, err);
+      });
+    library.delete(res.locals.book.id);
+    res.sendStatus(200);
   });

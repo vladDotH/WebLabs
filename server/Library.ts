@@ -1,5 +1,6 @@
 import { RequestType, Book, expired } from "../api";
 
+// Класс управления книгами
 export class Library {
   private id = 1;
   private books: Map<number, Book> = new Map();

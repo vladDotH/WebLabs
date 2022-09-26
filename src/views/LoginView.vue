@@ -91,5 +91,6 @@ export default class LoginView extends Vue {
 @import "../styles/main";
 .login {
   background-color: $bg-grey2;
+  box-shadow: 5px 5px 5px $bg-light;
 }
 </style>

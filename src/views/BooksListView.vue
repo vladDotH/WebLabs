@@ -74,6 +74,7 @@ export default class BooksListView extends Vue {
     this.load(RequestType.ALL);
   }
 
+  // Загрузка списка книг
   private async load(req: RequestType) {
     let url = new URL(config.endpoints.bookList, config.server);
     url.searchParams.append(config.reqTypeName, req.toString());
@@ -81,6 +82,7 @@ export default class BooksListView extends Vue {
     this.books = res.data;
   }
 
+  // Добавление книги
   private async addBook(book: FormData) {
     let url = new URL(config.endpoints.book, config.server);
     let res = await axios.post<number>(url.toString(), book);
