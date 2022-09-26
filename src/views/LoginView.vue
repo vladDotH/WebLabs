@@ -1,5 +1,8 @@
 <template>
-  <form class="login container rounded-3 col-6 p-5" @submit.prevent="submit">
+  <form
+    class="login container rounded-3 col-12 col-md-10 col-lg-6 p-5"
+    @submit.prevent="submit"
+  >
     <div class="fs-3">
       <label for="login" class="form-label">Логин</label>
       <input

@@ -29,7 +29,7 @@ export enum RequestType {
 export const config = {
   serverHost: "localhost",
   server: "http://localhost:3000/api/",
-  client: "http://localhost",
+  client: "http://localhost:8080",
   reqTypeName: "type",
   endpoints: {
     login: "login/",
