@@ -8,7 +8,6 @@ export const authRouter = Router();
 
 // Данные для входа
 const admin: User = {
-  id: 0,
   login: "admin",
   pwd: "admin",
 };
@@ -29,7 +28,7 @@ passport.use(
       secretOrKey: secretKey,
     },
     (payload, done) => {
-      done(null, { id: admin.id, name: admin.login });
+      done(null, { name: admin.login });
     }
   )
 );
@@ -39,13 +38,11 @@ authRouter.post("/login", (req, res) => {
   const data = req.body as User;
   console.log(data);
   if (data.login == admin.login && data.pwd == admin.pwd) {
-    const token = jwt.sign({ id: admin.id, name: admin.login }, secretKey, {
+    const token = jwt.sign({ name: admin.login }, secretKey, {
       expiresIn: "1h",
     });
     res.cookie("token", token, {
       maxAge: 60 * 60 * 1000,
-      sameSite: "none",
-      secure: true,
       httpOnly: true,
       signed: true,
     });

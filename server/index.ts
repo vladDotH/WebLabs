@@ -6,8 +6,6 @@ import passport, { authRouter, secretKey } from "./auth";
 import cookieParser from "cookie-parser";
 
 const app = express();
-
-const host = "127.0.0.1";
 const port = 3000;
 
 app.use(
@@ -23,6 +21,6 @@ app.use(passport.initialize());
 app.use("/api", authRouter);
 app.use("/api", passport.authenticate("jwt", { session: false }), libRouter);
 
-app.listen(port, host, function () {
-  console.log(`Server started at http://${host}:${port}`);
+app.listen(port, config.serverHost, function () {
+  console.log(`Server started at http://${config.serverHost}:${port}`);
 });

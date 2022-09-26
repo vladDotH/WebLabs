@@ -1,6 +1,7 @@
 {
   "watch": [
-    "./server/"
+    "./server/",
+    "./api"
   ],
   "ext": "ts",
   "ignore": [

@@ -64,7 +64,7 @@ libRouter
         // Удаление предыдущей обложки
         if (res.locals.book.cover)
           fs.unlink(path.resolve(storagePath, res.locals.book.cover), (err) => {
-            console.log("Cover deleting error", err);
+            if (err) console.log("Cover deleting error", err);
           });
         res.locals.book.cover = cover;
       }

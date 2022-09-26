@@ -27,10 +27,10 @@ export enum RequestType {
 }
 
 export const config = {
+  serverHost: "localhost",
   server: "http://localhost:3000/api/",
-  client: "http://localhost:8080",
+  client: "http://localhost",
   reqTypeName: "type",
-  authHeader: "Authorization",
   endpoints: {
     login: "login/",
     bookList: "books/",
@@ -40,7 +40,6 @@ export const config = {
 };
 
 export interface User {
-  id?: number;
   login: string;
   pwd: string;
 }
