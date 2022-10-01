@@ -36,7 +36,6 @@ passport.use(
 // Вход по логину и паролю, устанавливает токен в куки
 authRouter.post("/login", (req, res) => {
   const data = req.body as User;
-  console.log(data);
   if (data.login == admin.login && data.pwd == admin.pwd) {
     const token = jwt.sign({ name: admin.login }, secretKey, {
       expiresIn: "1h",

@@ -92,7 +92,6 @@ export default class BookCard extends Vue {
   private async mounted() {
     this.loader = new BookLoader(this.id);
     await this.loader.fetch();
-    console.log(this.loader.book);
   }
 
   // Событие карточки (удаление, выдача, возврат)

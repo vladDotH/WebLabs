@@ -8,7 +8,7 @@
         <select
           id="select"
           class="form-select"
-          @change="load($event.target.value)"
+          @change="loader.fetch($event.target.value)"
         >
           <option :value="RequestType.ALL" selected>Все</option>
           <option :value="RequestType.AVAILABLE">В наличии</option>
@@ -26,9 +26,9 @@
 
     <!-- Список книг -->
     <article class="col-xs-12 col-md-10 col-lg-6 mt-4 p-0">
-      <transition-group v-if="books.length" name="books">
+      <transition-group v-if="loader.books" name="books">
         <BookCard
-          v-for="id of books"
+          v-for="id of loader.books"
           :id="id"
           :key="id"
           ref="bookCards"
@@ -40,19 +40,19 @@
     <!-- Модальные окна -->
     <DeleteModal ref="deleteModal" @delete="onDelete"> </DeleteModal>
     <GiveModal ref="giveModal" @give="onGive"></GiveModal>
-    <BookFormModal ref="addModal" @submit="addBook"></BookFormModal>
+    <BookFormModal ref="addModal" @submit="loader.add($event)"></BookFormModal>
   </section>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import BookCard, { BookAction } from "@/components/BookCard.vue";
-import axios from "axios";
-import { config, Holder, RequestType } from "@/../api";
+import { Holder, RequestType } from "@/../api";
 import DeleteModal from "@/components/DeleteModal.vue";
 import GiveModal from "@/components/GiveModal.vue";
 import { BookLoader } from "@/util/BookLoader";
 import BookFormModal from "@/components/BookFormModal.vue";
+import { ListLoader } from "@/util/ListLoader";
 
 // Список книг с фильтрами
 @Component({
@@ -60,7 +60,7 @@ import BookFormModal from "@/components/BookFormModal.vue";
 })
 export default class BooksListView extends Vue {
   private RequestType = RequestType;
-  private books: number[] = [];
+  private loader = new ListLoader();
   // Контроллер книги выбранной в карточке (передаётся из её действия)
   private selected: BookLoader | null = null;
 
@@ -70,29 +70,13 @@ export default class BooksListView extends Vue {
     addModal: BookFormModal;
   };
 
-  private async mounted() {
-    this.load(RequestType.ALL);
-  }
-
-  // Загрузка списка книг
-  private async load(req: RequestType) {
-    let url = new URL(config.endpoints.bookList, config.server);
-    url.searchParams.append(config.reqTypeName, req.toString());
-    let res = await axios.get<number[]>(url.toString());
-    this.books = res.data;
-  }
-
-  // Добавление книги
-  private async addBook(book: FormData) {
-    let url = new URL(config.endpoints.book, config.server);
-    let res = await axios.post<number>(url.toString(), book);
-    this.books.unshift(res.data);
+  private mounted() {
+    this.loader.fetch(RequestType.ALL);
   }
 
   private onDelete() {
     this.selected?.deleteBook();
-    if (this.selected?.id)
-      this.books.splice(this.books.indexOf(this.selected.id), 1);
+    this.loader.remove(this.selected?.id);
   }
 
   private onGive(holder: Holder) {
