@@ -5,7 +5,7 @@
       ref="cover"
       :class="loader.book?.cover ? 'image' : 'empty'"
     >
-      <img class="" width="100%" :src="loader.book.cover" />
+      <img class="col-12" :src="loader.book.cover" />
     </div>
     <div class="col-12 col-md-8 p-4">
       <div class="row">
@@ -112,7 +112,6 @@ export default class BookCard extends Vue {
   .cover {
     transition: all 0.3s ease-in-out;
     &.image {
-      background-size: contain;
     }
     &.empty {
       background: linear-gradient(to right bottom, $primary 25%, $secondary)
