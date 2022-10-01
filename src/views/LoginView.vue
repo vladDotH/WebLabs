@@ -6,7 +6,7 @@
     <div class="fs-3">
       <label for="login" class="form-label">Логин</label>
       <input
-        v-model="login"
+        v-model="user.login"
         type="text"
         class="form-control"
         :class="{ 'is-invalid': !valid }"
@@ -17,7 +17,7 @@
 
       <label for="pwd" class="mt-3 form-label">Пароль</label>
       <input
-        v-model="pwd"
+        v-model="user.pwd"
         type="password"
         class="form-control"
         :class="{ 'is-invalid': !valid }"
@@ -50,8 +50,7 @@ import { Toast } from "bootstrap";
 
 @Component({})
 export default class LoginView extends Vue {
-  private login = "";
-  private pwd = "";
+  private user: User = { login: "", pwd: "" };
   private readonly url = new URL(
     config.endpoints.login,
     config.server
@@ -64,14 +63,7 @@ export default class LoginView extends Vue {
 
   private async submit() {
     try {
-      await axios.post(
-        this.url,
-        {
-          login: this.login,
-          pwd: this.pwd,
-        } as User,
-        { withCredentials: true }
-      );
+      await axios.post(this.url, this.user);
       this.$router.push({ name: "home" });
     } catch (err) {
       new Toast(this.$refs.invalidToast, {
