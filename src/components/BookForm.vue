@@ -29,8 +29,9 @@
     <div class="mb-3 mt-3">
       <label for="year" class="form-label fs-4 fw-semibold">Год</label>
       <input
-        v-model="book.year"
-        :class="book.year == '' ? 'is-invalid' : 'is-valid'"
+        ref="year"
+        v-model.number="book.year"
+        :class="$refs.year?.value ? 'is-valid' : 'is-invalid'"
         type="number"
         class="form-control"
         id="year"
@@ -64,12 +65,13 @@ export default class BookForm extends Vue {
   $refs!: {
     cover: HTMLInputElement;
     form: HTMLFormElement;
+    year: HTMLInputElement;
   };
 
   // Сброс формы
   reset() {
-    this.$refs.form.reset();
     [this.book.title, this.book.author, this.book.year] = ["", "", 1970];
+    this.$refs.cover.value = "";
   }
 
   // Попытка "отправить" форму, если валидация пройдена вызываются события submit-data и submit-form

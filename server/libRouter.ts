@@ -90,7 +90,7 @@ libRouter
   .delete((req, res) => {
     if (res.locals.book.cover)
       fs.unlink(path.resolve(storagePath, res.locals.book.cover), (err) => {
-        console.log(`Cover ${res.locals.book.id} deleting error`, err);
+        if (err) console.log(`Cover ${res.locals.book.id} deleting error`, err);
       });
     library.delete(res.locals.book.id);
     res.sendStatus(200);

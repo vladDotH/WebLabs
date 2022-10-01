@@ -1,6 +1,10 @@
 <template>
   <div class="book row m-3 d-flex justify-content-center" v-if="loader.book">
-    <div class="cover col-6 col-md-4 d-flex align-items-center" ref="cover">
+    <div
+      class="cover col-6 col-md-4 d-flex align-items-center"
+      ref="cover"
+      :class="loader.book?.cover ? 'image' : 'empty'"
+    >
       <img class="" width="100%" :src="loader.book.cover" />
     </div>
     <div class="col-12 col-md-8 p-4">
@@ -89,7 +93,6 @@ export default class BookCard extends Vue {
     this.loader = new BookLoader(this.id);
     await this.loader.fetch();
     console.log(this.loader.book);
-    if (this.loader.book?.cover) this.$refs.cover.style.background = "inherit";
   }
 
   // Событие карточки (удаление, выдача, возврат)
@@ -108,12 +111,14 @@ export default class BookCard extends Vue {
   box-shadow: 10px 10px 10px $bg-grey2;
 
   .cover {
-    background: linear-gradient(to right bottom, $primary 25%, $secondary);
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center center;
     transition: all 0.3s ease-in-out;
-
+    &.image {
+      background-size: contain;
+    }
+    &.empty {
+      background: linear-gradient(to right bottom, $primary 25%, $secondary)
+        no-repeat center center;
+    }
     &:hover {
       transform: scale(0.98);
     }
