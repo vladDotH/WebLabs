@@ -1,36 +1,52 @@
 <template>
   <div id="app">
-    <header class="header container-fluid pt-3 pb-3 ps-5 pe-5 fs-2">
-      <span class="me-2">Библиотека</span>
-      <font-awesome-icon icon="fa-book-open" />
+    <header
+      class="header container-fluid pt-3 pb-3 ps-5 pe-5 bg-primary text-light fw-bold fs-2"
+    >
+      <router-link
+        :to="{ name: Views.HOME }"
+        class="text-white text-decoration-none"
+      >
+        <span class="me-2">Администрация</span>
+        <font-awesome-icon icon="fa-wrench" />
+      </router-link>
     </header>
-    <main class="view container rounded-3 mt-2 p-5">
+    <main class="view col-md-8 col-xl-6 m-auto">
       <router-view />
     </main>
+
+    <Toaster class="position-fixed bottom-0 end-0 p-3" ref="toaster" />
+    <RedactModal ref="redact" />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { Component, ProvideReactive, Vue } from "vue-property-decorator";
+import { Views } from "./router";
+import Toaster from "@/components/Toaster.vue";
+import RedactModal from "@/components/RedactModal.vue";
 
-@Component
-export default class App extends Vue {}
+@Component({
+  components: { RedactModal, Toaster },
+})
+export default class App extends Vue {
+  private Views = Views;
+
+  $refs!: {
+    toaster: Toaster;
+    redact: RedactModal;
+  };
+
+  private mounted() {
+    this.toaster = this.$refs.toaster;
+    this.redact = this.$refs.redact;
+  }
+
+  @ProvideReactive() toaster: Toaster | null = null;
+  @ProvideReactive() redact: RedactModal | null = null;
+}
 </script>
 
 <style lang="scss">
-@import "bootstrap/scss/bootstrap";
 @import "styles/main";
-
-#app {
-}
-
-.header {
-  background-color: $primary;
-  color: $text-light;
-  font-weight: bold;
-}
-
-.view {
-  background-color: $bg-grey1;
-}
 </style>

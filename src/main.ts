@@ -1,12 +1,13 @@
 import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faBookOpen, faGears } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import axios from "axios";
+import * as icons from "./icons";
+import "bootstrap";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
-library.add(faBookOpen, faGears);
+library.add(icons);
 Vue.component("font-awesome-icon", FontAwesomeIcon);
 
 Vue.config.productionTip = false;
