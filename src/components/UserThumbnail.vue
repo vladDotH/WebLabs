@@ -27,7 +27,7 @@ import { Views } from "@/router";
 
 // Иконка пользователя
 @Component({})
-export default class Photo extends Vue {
+export default class UserThumbnail extends Vue {
   private Views = Views;
   @Prop({ required: true }) readonly loader!: UserLoader;
 }

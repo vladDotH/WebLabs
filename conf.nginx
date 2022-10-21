@@ -5,18 +5,18 @@ server {
 }
 
 server {
-    listen 443;
+    listen 443 http2;
     server_name localhost;
 
     #SSL settings
-    ssl_certificate /root/labssl/cert.crt;
-    ssl_certificate_key /root/labssl/key.key;
+	ssl_certificate /home/vlad/ssl/cert.crt;
+ 	ssl_certificate_key /home/vlad/ssl/key.key;
 
-    charset utf-8;
-    root /root/lab3/dist/client;
-    index index.html;
+	charset utf-8;
+	root /home/vlad/WebstormProjects/WebLabs/dist;
+	index index.html;
 
     location /api {
-        proxy_pass http://localhost:3001;
+        proxy_pass http://localhost:3000;
     }
 }

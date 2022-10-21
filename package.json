@@ -1,7 +1,9 @@
 {
-  "name": "lab3",
+  "name": "soc_net_admin_module_test",
+  "author": "Vladislav Bolkunov",
+  "homepage": "https://github.com/vladDotH/WebLabs/tree/lab3",
   "version": "0.1.0",
-  "private": true,
+
   "scripts": {
     "lint": "vue-cli-service lint",
     "client:build": "vue-cli-service build",

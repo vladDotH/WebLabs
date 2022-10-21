@@ -23,7 +23,7 @@ import { Status } from "@/../api";
 
 // Компонент блокирования/разблокирования ресурсов
 @Component({})
-export default class Photo extends Vue {
+export default class BanSwitcher extends Vue {
   private Status = Status;
   @Prop({ required: true }) status!: Status;
 
