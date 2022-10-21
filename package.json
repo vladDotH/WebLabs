@@ -3,11 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "client:dev": "vue-cli-service serve",
+    "lint": "vue-cli-service lint",
     "client:build": "vue-cli-service build",
-    "server:dev": "nodemon --config ./nodemon.server.json",
+    "client:dev": "vue-cli-service serve",
     "server:build": "tsc -p tsconfig.server.json",
-    "lint": "vue-cli-service lint"
+    "server:dev": "nodemon --config ./nodemon.server.json"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.2.0",
@@ -19,6 +19,7 @@
     "axios": "^0.27.2",
     "bootstrap": "^5.2.1",
     "cookie-parser": "^1.4.6",
+    "core-js": "^3.8.3",
     "cors": "^2.8.5",
     "express": "^4.18.1",
     "lodash": "^4.17.21",
@@ -44,6 +45,7 @@
     "@types/passport-local": "^1.0.34",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
+    "@vue/cli-plugin-babel": "~5.0.0",
     "@vue/cli-plugin-eslint": "~5.0.0",
     "@vue/cli-plugin-router": "~5.0.0",
     "@vue/cli-plugin-typescript": "~5.0.0",

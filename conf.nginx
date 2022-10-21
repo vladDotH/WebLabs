@@ -1,0 +1,22 @@
+server {
+    listen 80;
+    server_name localhost;
+    return 307 https://localhost$request_uri;
+}
+
+server {
+    listen 443;
+    server_name localhost;
+
+    #SSL settings
+    ssl_certificate /root/labssl/cert.crt;
+    ssl_certificate_key /root/labssl/key.key;
+
+    charset utf-8;
+    root /root/lab3/dist/client;
+    index index.html;
+
+    location /api {
+        proxy_pass http://localhost:3001;
+    }
+}
