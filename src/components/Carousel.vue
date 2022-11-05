@@ -26,15 +26,15 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component } from "vue-property-decorator";
 import Photo from "@/components/Photo.vue";
+import List from "@/components/lists/List";
 
 // Карусель фотографий в посте
 @Component({
   components: { Photo },
 })
-export default class Carousel extends Vue {
-  @Prop({ required: true }) readonly list!: number[];
+export default class Carousel extends List {
   private id = 0;
 
   $refs!: {

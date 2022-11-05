@@ -13,7 +13,7 @@ server {
  	ssl_certificate_key /home/vlad/ssl/key.key;
 
 	charset utf-8;
-	root /home/vlad/WebstormProjects/WebLabs/dist;
+	root /home/vlad/WebstormProjects/WebLabs/dist/client;
 	index index.html;
 
     location /api {

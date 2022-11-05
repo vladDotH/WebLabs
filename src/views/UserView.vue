@@ -9,8 +9,9 @@
         :to="{ name: link[0] }"
         class="btn btn-outline-primary"
         exact-active-class="active"
-        >{{ link[1] }}</router-link
       >
+        {{ link[1] }}
+      </router-link>
     </nav>
 
     <div class="mt-3 mb-3">
