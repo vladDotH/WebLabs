@@ -9,10 +9,15 @@
     "birthDate": "2002-04-21",
     "status": 0,
     "role": 1,
-    "friends": [2, 7],
+    "friends": [
+      2,
+      7
+    ],
+    "friendsRequests": [
+      6, 8
+    ],
     "photoId": 2
   },
-
   {
     "id": 2,
     "surname": "Колосов",
@@ -23,10 +28,13 @@
     "birthDate": "2002-05-12",
     "status": 0,
     "role": 1,
-    "friends": [1, 7],
+    "friends": [
+      1,
+      7
+    ],
+    "friendsRequests": [],
     "photoId": 6
   },
-
   {
     "id": 3,
     "surname": "Иванов",
@@ -37,10 +45,12 @@
     "birthDate": "1970-01-01",
     "status": 0,
     "role": 0,
-    "friends": [5],
+    "friends": [
+      5
+    ],
+    "friendsRequests": [7],
     "photoId": null
   },
-
   {
     "id": 4,
     "surname": "Шиханова",
@@ -52,9 +62,11 @@
     "status": 1,
     "role": 0,
     "friends": [],
+    "friendsRequests": [
+      7
+    ],
     "photoId": 9
   },
-
   {
     "id": 5,
     "surname": "Gozlan",
@@ -65,10 +77,12 @@
     "birthDate": "2001-02-10",
     "status": 2,
     "role": 0,
-    "friends": [3],
+    "friends": [
+      3
+    ],
+    "friendsRequests": [],
     "photoId": null
   },
-
   {
     "id": 6,
     "surname": "Денежный",
@@ -79,10 +93,13 @@
     "birthDate": "2002-07-17",
     "status": 0,
     "role": 0,
-    "friends": [7],
+    "friends": [
+      7,
+      8
+    ],
+    "friendsRequests": [],
     "photoId": 8
   },
-
   {
     "id": 7,
     "surname": "Болкунов",
@@ -93,10 +110,15 @@
     "birthDate": "2002-10-08",
     "status": 0,
     "role": 0,
-    "friends": [1, 2, 6],
+    "friends": [
+      1,
+      2,
+      6,
+      8
+    ],
+    "friendsRequests": [],
     "photoId": 4
   },
-
   {
     "id": 8,
     "surname": "Архипов",
@@ -107,7 +129,11 @@
     "birthDate": "2002-11-30",
     "status": 0,
     "role": 0,
-    "friends": [6, 7],
+    "friends": [
+      6,
+      7
+    ],
+    "friendsRequests": [],
     "photoId": 10
   }
 ]

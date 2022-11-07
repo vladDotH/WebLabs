@@ -2,6 +2,7 @@ import axios from "axios";
 import { ILoader, IndexedLoader } from "./base";
 import {
   config,
+  Indexed,
   PersonalData,
   Photo,
   Post,
@@ -14,7 +15,7 @@ import {
 
 // Абстрактный загрузчик объектов
 export abstract class ObjectLoader<T> implements ILoader, IndexedLoader {
-  readonly id: number;
+  id: number;
   data: T | null = null;
 
   constructor(id: number) {
@@ -69,8 +70,21 @@ export class UserLoader extends ObjectLoader<UserData> {
   }
 }
 
+// Загрузчик собственного id пользователя
+export class SelfLoader {
+  readonly self = new URL(config.endpoints.self, config.server);
+  id: number | null = null;
+  async fetch() {
+    this.id = (await axios.get<Indexed>(this.self.toString())).data.id;
+  }
+}
+
+abstract class ResourceLoader<T extends Resource> extends ObjectLoader<T> {}
+
 // Загрузчик ресурсов
-abstract class ResourceLoader<T extends Resource> extends ObjectLoader<T> {
+abstract class PublicResourceLoader<
+  T extends Resource & StatusData
+> extends ResourceLoader<T> {
   updateStatus(s: Status) {
     if (this.data) this.data.status = s;
     return axios.patch<StatusData>(this.url.toString(), {
@@ -80,7 +94,7 @@ abstract class ResourceLoader<T extends Resource> extends ObjectLoader<T> {
 }
 
 // Загрузчик поста
-export class PostLoader extends ResourceLoader<Post> {
+export class PostLoader extends PublicResourceLoader<Post> {
   get endpoint(): string {
     return config.endpoints.post;
   }
@@ -94,7 +108,7 @@ export class PhotoLoader extends ObjectLoader<Blob> {
 }
 
 // Загрузчик информации о фотографии
-export class PhotoInfoLoader extends ResourceLoader<Photo> {
+export class PhotoInfoLoader extends PublicResourceLoader<Photo> {
   get endpoint(): string {
     return config.endpoints.photoInfo;
   }

@@ -2,8 +2,8 @@ import passport from "passport";
 import { JwtFromRequestFunction, Strategy as JwtStrategy } from "passport-jwt";
 import { Router } from "express";
 import jwt from "jsonwebtoken";
-import { Indexed, Role, UserAuthData } from "../api";
-import { Controller } from "./Controller";
+import { Indexed, Role, User, UserAuthData } from "../api";
+import { NetworkModel } from "./model";
 
 // Закрытый ключ
 export const secretKey = "#S3cR3t_K3y#";
@@ -15,10 +15,10 @@ const cookieExtractor: JwtFromRequestFunction = function (req): string {
 
 export { passport };
 
-export function createAuthRouter(controller: Controller): Router {
+export function createAuthRouter(model: NetworkModel): Router {
   const authRouter = Router();
 
-  // Проверка токена и роли пользователя
+  // Проверка токена пользователя
   passport.use(
     new JwtStrategy(
       {
@@ -26,18 +26,25 @@ export function createAuthRouter(controller: Controller): Router {
         secretOrKey: secretKey,
       },
       (payload: Indexed, done) => {
-        if (controller.getUserData(payload.id)?.role == Role.ADMIN)
-          done(null, { id: payload.id });
-        else done(null, false);
+        done(null, model.getUserData(payload.id) ?? false);
       }
     )
   );
 
+  // Регистрация пользователя
+  authRouter.post("/signup", (req, res) => {
+    const user = req.body as User;
+    const id = model.signIn(user);
+    console.log("signup: ", user, id);
+    res.status(id ? 200 : 401);
+  });
+
   // Вход по email и паролю, устанавливает токен в куки
   authRouter.post("/login", (req, res) => {
     const data = req.body as UserAuthData,
-      user = controller.authorize(data);
-    if (user?.role == Role.ADMIN) {
+      user = model.authorize(data);
+    console.log("login: ", data);
+    if (user) {
       const token = jwt.sign({ id: user.id }, secretKey, {
         expiresIn: "1h",
       });

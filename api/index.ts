@@ -38,6 +38,7 @@ export interface PersonalData {
 // Данные пользователя соц. сети
 export interface UserData extends Indexed, UserStatusData, PersonalData {
   friends: number[];
+  friendsRequests: number[];
   photoId: number | null;
 }
 
@@ -47,18 +48,23 @@ export interface User extends UserData {
 }
 
 // Объект ресурса (фотография/пост)
-export interface Resource extends Indexed, StatusData {
+export interface Resource extends Indexed {
   userId: number;
   time: string;
 }
 
-export interface Photo extends Resource {
+export interface Photo extends Resource, StatusData {
   file: string;
 }
 
-export interface Post extends Resource {
+export interface Post extends Resource, StatusData {
   text: string;
   photosId: number[];
+}
+
+export interface Message extends Resource {
+  destId: number;
+  text: string;
 }
 
 // Авторизационные данные
@@ -73,6 +79,7 @@ export const config = {
   server: "http://localhost:3000/api/",
   client: "http://localhost:8080",
   endpoints: {
+    self: "self/",
     login: "login/",
     usersList: "users/",
     user: "user/",
@@ -84,5 +91,10 @@ export const config = {
     photoInfo: "photoinfo/",
     friends: "friends/",
     friendsPosts: "friendsposts/",
+    friendsRequests: "friends_requests/",
+    friend: "friend/",
+    request: "request/",
+    accept: "accept/",
+    decline: "decline/",
   },
 };

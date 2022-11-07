@@ -1,17 +1,38 @@
-import { Router } from "express";
+import { NextFunction, Response, Router } from "express";
 import path from "path";
-import { Controller } from "./Controller";
-import { PersonalData, StatusData, UserStatusData } from "../api";
+import { NetworkModel } from "./model";
+import {
+  PersonalData,
+  Role,
+  StatusData,
+  UserStatusData,
+  Post,
+  Indexed,
+} from "../api";
+import { Multer } from "multer";
 
-export function createAdminRouter(
-  controller: Controller,
-  storagePath: string
+export function createNetworkRouter(
+  model: NetworkModel,
+  storagePath: string,
+  uploader: Multer
 ): Router {
   const router = Router();
 
+  // Проверка объекта пользователя в res.locals.user
+  router.use((req, res, next) => {
+    if (res.locals.user) {
+      // console.log(res.locals.user);
+      next();
+    } else res.status(500).end("User auth error");
+  });
+
+  router.get("/self", (req, res) => {
+    res.json({ id: res.locals.user.id } as Indexed);
+  });
+
   // Список пользователей
   router.get("/users", (req, res) => {
-    res.json(controller.getUsers());
+    res.json(model.getUsers());
   });
 
   // Middleware для извлечения id пользователя
@@ -25,18 +46,40 @@ export function createAdminRouter(
     "/user/:id",
     Router()
       .get("/photos", (req, res) => {
-        res.json(controller.getPhotos(res.locals.id));
+        res.json(model.getPhotos(res.locals.id));
       })
       .get("/posts", (req, res) => {
-        res.json(controller.getPosts(res.locals.id));
+        res.json(model.getPosts(res.locals.id));
       })
       .get("/friends", (req, res) => {
-        res.json(controller.getFriends(res.locals.id));
+        res.json(model.getFriends(res.locals.id));
       })
       .get("/friendsposts", (req, res) => {
-        res.json(controller.getFriendsPosts(res.locals.id));
+        res.json(model.getFriendsPosts(res.locals.id));
       })
   );
+
+  // TODO
+  // Загрузить аватарку
+  router.put("/avatar", uploader.single("avatar"), (req, res) => {});
+  // Отправить заявку
+  router.post("/friend/:id/request", (req, res) => {});
+  // Отменить заявку / удалить друга
+  router.delete("/friend/:id/request", (req, res) => {});
+  // Подтвердить заявку
+  router.post("/friend/:id/accept", (req, res) => {});
+  // Отклонить заявку
+  router.post("/friend/:id/decline", (req, res) => {});
+
+  // Опубликовать запись
+  router.post("/post", uploader.array("photos"), (req, res) => {
+    const post = req.body as Post;
+    console.log(req.files);
+    res.json(model.addPost({ ...post, userId: res.locals.user.id }));
+  });
+
+  // Отправить сообщение
+  router.post("/message", (req, res) => {});
 
   // Обращения к посту
   router
@@ -46,10 +89,11 @@ export function createAdminRouter(
       next();
     })
     .get((req, res) => {
-      res.json(controller.getPost(res.locals.id));
+      res.json(model.getPost(res.locals.id));
     })
+    // TODO protection
     .patch((req, res) => {
-      controller.updatePostStatus(res.locals.id, req.body as StatusData);
+      model.updatePostStatus(res.locals.id, req.body as StatusData);
       res.sendStatus(200);
     });
 
@@ -61,7 +105,7 @@ export function createAdminRouter(
       next();
     })
     .get((req, res) => {
-      const photo = controller.getPhoto(res.locals.id);
+      const photo = model.getPhoto(res.locals.id);
       if (photo) res.download(path.resolve(storagePath, photo.file));
       else res.sendStatus(204);
     });
@@ -75,10 +119,11 @@ export function createAdminRouter(
     })
     .get((req, res) => {
       const photoid = parseInt(req.params.photoid);
-      res.json(controller.getPhoto(photoid));
+      res.json(model.getPhoto(photoid));
     })
+    // TODO protection
     .patch((req, res) => {
-      controller.updatePhotoStatus(res.locals.id, req.body as StatusData);
+      model.updatePhotoStatus(res.locals.id, req.body as StatusData);
       res.sendStatus(200);
     });
 
@@ -86,16 +131,18 @@ export function createAdminRouter(
   router
     .route("/user/:id")
     .get((req, res) => {
-      res.json(controller.getUserData(res.locals.id));
+      res.json(model.getUserData(res.locals.id));
     })
+    // TODO protection
     .put((req, res) => {
       const data = req.body as PersonalData;
-      controller.updatePersonal(res.locals.id, data);
+      model.updatePersonal(res.locals.id, data);
       res.sendStatus(200);
     })
+    // TODO protection
     .patch((req, res) => {
       const data = req.body as UserStatusData;
-      controller.updateUserStatus(res.locals.id, data);
+      model.updateUserStatus(res.locals.id, data);
       res.sendStatus(200);
     });
 

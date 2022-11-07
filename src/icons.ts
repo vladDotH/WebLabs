@@ -9,4 +9,5 @@ export {
   faCircleArrowLeft,
   faBan,
   faClockRotateLeft,
+  faUsersRays,
 } from "@fortawesome/free-solid-svg-icons";

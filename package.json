@@ -1,7 +1,7 @@
 {
-  "name": "soc_net_admin_module_test",
+  "name": "soc_net_test",
   "author": "Vladislav Bolkunov",
-  "homepage": "https://github.com/vladDotH/WebLabs/tree/lab3",
+  "homepage": "https://github.com/vladDotH/WebLabs/tree/lab4",
   "version": "0.1.0",
 
   "scripts": {

@@ -3,15 +3,17 @@ import cors from "cors";
 import { config } from "../api";
 import { createAuthRouter, passport, secretKey } from "./auth";
 import cookieParser from "cookie-parser";
-import { createAdminRouter } from "./router";
+import { createNetworkRouter } from "./router";
 import fs from "fs";
 import path from "path";
-import { Controller } from "./Controller";
+import { NetworkModel } from "./model";
+import multer from "multer";
 
 const app = express();
 const port = 3000;
 
 const storagePath = "./storage";
+export const uploader = multer({ dest: storagePath });
 
 function load<T>(file: string): T {
   return JSON.parse(
@@ -19,10 +21,11 @@ function load<T>(file: string): T {
   ) as T;
 }
 
-const controller = new Controller(
+const model = new NetworkModel(
   load("users.json"),
   load("photos.json"),
-  load("posts.json")
+  load("posts.json"),
+  load("messages.json")
 );
 
 app.use(
@@ -35,11 +38,15 @@ app.use(cookieParser(secretKey));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(passport.initialize());
-app.use("/api", createAuthRouter(controller));
+app.use("/api", createAuthRouter(model));
 app.use(
   "/api",
-  passport.authenticate("jwt", { session: false }),
-  createAdminRouter(controller, storagePath)
+  (req, res, next) =>
+    passport.authenticate("jwt", { session: false }, (err, user, info) => {
+      res.locals.user = user;
+      next();
+    })(req, res, next),
+  createNetworkRouter(model, storagePath, uploader)
 );
 
 app.listen(port, config.serverHost, function () {

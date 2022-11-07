@@ -1,37 +1,44 @@
 <template>
-  <form
-    class="login container border shadow rounded-3 col-md-10 mt-5 p-5"
-    @submit.prevent="submit"
-  >
-    <div class="fs-3">
-      <label for="login" class="form-label">Email</label>
-      <input
-        v-model="user.email"
-        type="text"
-        class="form-control"
-        :class="{ 'is-invalid': !valid }"
-        @keydown="reset"
-        id="login"
-        required
-      />
+  <section>
+    <header
+      class="header container-fluid py-2 px-5 bg-primary text-light fw-bold fs-2"
+    >
+      <font-awesome-icon icon="fa-solid fa-users-rays" />
+    </header>
+    <form
+      class="login container border shadow rounded-3 col-md-8 col-xl-6 mt-5 p-5"
+      @submit.prevent="submit"
+    >
+      <div class="fs-3">
+        <label for="login" class="form-label">Email</label>
+        <input
+          v-model="user.email"
+          type="text"
+          class="form-control"
+          :class="{ 'is-invalid': !valid }"
+          @keydown="reset"
+          id="login"
+          required
+        />
 
-      <label for="pwd" class="mt-3 form-label">Пароль</label>
-      <input
-        v-model="user.password"
-        type="password"
-        class="form-control"
-        :class="{ 'is-invalid': !valid }"
-        @keydown="reset"
-        id="pwd"
-        required
-      />
-    </div>
-    <div class="mt-4 row d-flex justify-content-center">
-      <button type="submit" class="btn btn-primary col-6 fs-3 fw-bold">
-        Вход
-      </button>
-    </div>
-  </form>
+        <label for="pwd" class="mt-3 form-label">Пароль</label>
+        <input
+          v-model="user.password"
+          type="password"
+          class="form-control"
+          :class="{ 'is-invalid': !valid }"
+          @keydown="reset"
+          id="pwd"
+          required
+        />
+      </div>
+      <div class="mt-4 row d-flex justify-content-center">
+        <button type="submit" class="btn btn-primary col-6 fs-3 fw-bold">
+          Вход
+        </button>
+      </div>
+    </form>
+  </section>
 </template>
 
 <script lang="ts">
@@ -56,7 +63,7 @@ export default class LoginView extends Vue {
   private async submit() {
     try {
       await axios.post<UserAuthData>(this.url, this.user);
-      this.$router.push({ name: Views.HOME });
+      this.$router.push({ name: Views.PROFILE });
     } catch (err) {
       this.toaster?.show(Status.BLOCKED, "Неверные данные для входа");
       this.valid = false;

@@ -8,7 +8,7 @@
   >
     <font-awesome-icon
       icon="fa-circle-arrow-left"
-      class="position-absolute text-info open w-100 h-100 bg-white"
+      class="position-absolute text-info open w-100 h-100 bg-transparent"
     />
 
     <font-awesome-icon
