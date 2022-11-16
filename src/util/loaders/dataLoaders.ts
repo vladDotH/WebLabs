@@ -11,7 +11,7 @@ import {
   StatusData,
   UserData,
   UserStatusData,
-} from "@/../api";
+} from "../../../api";
 
 // Абстрактный загрузчик объектов
 export abstract class ObjectLoader<T> implements ILoader, IndexedLoader {
@@ -52,14 +52,23 @@ export class UserLoader extends ObjectLoader<UserData> {
       : "";
   }
 
-  updateStatus() {
+  updateStatus(sd: UserStatusData) {
+    if (this.data) [this.data.status, this.data.role] = [sd.status, sd.role];
     return axios.patch<UserStatusData>(this.url.toString(), {
       status: this.data?.status,
       role: this.data?.role,
     } as UserStatusData);
   }
 
-  updatePersonal() {
+  updatePersonal(pd: PersonalData) {
+    if (this.data)
+      [
+        this.data.name,
+        this.data.surname,
+        this.data.lastName,
+        this.data.email,
+        this.data.birthDate,
+      ] = [pd.name, pd.surname, pd.lastName, pd.email, pd.birthDate];
     return axios.put<PersonalData>(this.url.toString(), {
       name: this.data?.name,
       surname: this.data?.surname,
@@ -67,15 +76,6 @@ export class UserLoader extends ObjectLoader<UserData> {
       birthDate: this.data?.birthDate,
       email: this.data?.email,
     } as PersonalData);
-  }
-}
-
-// Загрузчик собственного id пользователя
-export class SelfLoader {
-  readonly self = new URL(config.endpoints.self, config.server);
-  id: number | null = null;
-  async fetch() {
-    this.id = (await axios.get<Indexed>(this.self.toString())).data.id;
   }
 }
 
@@ -97,6 +97,16 @@ abstract class PublicResourceLoader<
 export class PostLoader extends PublicResourceLoader<Post> {
   get endpoint(): string {
     return config.endpoints.post;
+  }
+
+  static postUrl = new URL(config.endpoints.post, config.server);
+  static async makePost(text: string, files: FileList | null): Promise<number> {
+    const data = new FormData();
+    data.set("text", text);
+    if (files)
+      for (let f = 0; f < files.length; f++)
+        data.append("photos", files.item(f)!);
+    return (await axios.post<Indexed>(this.postUrl.toString(), data)).data.id;
   }
 }
 

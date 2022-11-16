@@ -7,7 +7,7 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import UsersList from "@/components/lists/UsersList.vue";
-import { UsersListLoader } from "@/loaders";
+import { UsersListLoader } from "@/util";
 
 // Страница списка всех пользователей
 @Component({

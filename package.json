@@ -3,13 +3,13 @@
   "author": "Vladislav Bolkunov",
   "homepage": "https://github.com/vladDotH/WebLabs/tree/lab4",
   "version": "0.1.0",
-
   "scripts": {
     "lint": "vue-cli-service lint",
     "client:build": "vue-cli-service build",
     "client:dev": "vue-cli-service serve",
     "server:build": "tsc -p tsconfig.server.json",
-    "server:dev": "nodemon --config ./nodemon.server.json"
+    "server:dev": "nodemon --config ./nodemon.server.json",
+    "test": "jest"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.2.0",
@@ -28,18 +28,23 @@
     "multer": "^1.4.5-lts.1",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.0",
+    "rollbar": "^2.25.2",
     "sass": "^1.54.9",
+    "socket.io": "^4.5.3",
+    "socket.io-client": "^4.5.3",
     "vue": "^2.6.14",
     "vue-class-component": "^7.2.3",
     "vue-property-decorator": "^9.1.2",
     "vue-router": "^3.5.1"
   },
   "devDependencies": {
+    "@jest/globals": "^29.3.1",
     "@types/bootstrap": "^5.2.4",
     "@types/connect-flash": "^0.0.37",
     "@types/cors": "^2.8.12",
     "@types/express": "^4.17.14",
     "@types/express-session": "^1.17.5",
+    "@types/jest": "^29.2.3",
     "@types/lodash": "^4.14.184",
     "@types/multer": "^1.4.7",
     "@types/node": "^18.7.18",
@@ -57,9 +62,11 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-vue": "^8.0.3",
+    "jest": "^29.3.1",
     "nodemon": "^2.0.20",
     "prettier": "^2.4.1",
     "sass-loader": "^13.0.2",
+    "ts-jest": "^29.0.3",
     "ts-node": "^10.9.1",
     "typescript": "~4.5.5",
     "vue-template-compiler": "^2.6.14"

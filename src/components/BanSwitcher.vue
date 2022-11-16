@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="user.isAdmin">
     <font-awesome-icon
       v-if="status === Status.ACTIVE"
       icon="fa-solid fa-ban"
@@ -18,12 +18,21 @@
 </template>
 
 <script lang="ts">
-import { Component, Emit, Prop, Vue } from "vue-property-decorator";
+import {
+  Component,
+  Emit,
+  InjectReactive,
+  Prop,
+  Vue,
+} from "vue-property-decorator";
 import { Status } from "@/../api";
+import { UserController } from "@/util";
 
 // Компонент блокирования/разблокирования ресурсов
 @Component({})
 export default class BanSwitcher extends Vue {
+  @InjectReactive() readonly user!: UserController;
+
   private Status = Status;
   @Prop({ required: true }) status!: Status;
 

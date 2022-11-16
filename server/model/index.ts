@@ -1,4 +1,16 @@
 import { Indexed } from "../../api";
+import fs from "fs";
+import path from "path";
+
+export function nowISO() {
+  return new Date().toISOString();
+}
+
+export function load<T>(file: string, storagePath: string): T {
+  return JSON.parse(
+    fs.readFileSync(path.resolve(storagePath, file), "utf-8")
+  ) as T;
+}
 
 export class Model<T extends Indexed> {
   readonly list: T[] = [];
@@ -11,6 +23,11 @@ export class Model<T extends Indexed> {
 
   find(id: number): T | null {
     return this.list.find((obj) => obj.id == id) ?? null;
+  }
+
+  remove(id: number) {
+    const i = this.list.findIndex((e) => e.id === id);
+    if (i !== -1) this.list.splice(i, 1);
   }
 
   getIds(): number[] {

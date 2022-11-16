@@ -12,7 +12,6 @@ export enum Views {
   PROFILE = "profile",
   NEWS = "news",
   FRIENDS = "friends",
-  MESSANGER = "messenger",
   PHOTOS = "photos",
 
   USER = "user",
@@ -21,11 +20,7 @@ export enum Views {
   USER_FRIENDS = "user_friends",
   USER_FRIENDSPOSTS = "user_friends_posts",
 
-  ADMINISTRATION = "admin",
-  ADMIN_USER = "admin_user",
-  ADMIN_PHOTOS = "admin_photos",
-  ADMIN_POSTS = "admin_posts",
-  ADMIN_FRIENDSPOSTS = "admin_friends_posts",
+  USERS_LIST = "users_list",
 }
 
 const routes: Array<RouteConfig> = [
@@ -42,7 +37,7 @@ const routes: Array<RouteConfig> = [
       {
         path: "",
         name: Views.PROFILE,
-        component: () => import("../views/Profile.vue"),
+        component: () => import("../views/MyProfile.vue"),
       },
       {
         path: "news",
@@ -55,23 +50,18 @@ const routes: Array<RouteConfig> = [
         component: () => import("../views/Friends.vue"),
       },
       {
-        path: "messenger",
-        name: Views.MESSANGER,
-        component: () => import("../views/Messanger.vue"),
-      },
-      {
         path: "photos",
         name: Views.PHOTOS,
         component: () => import("../views/Photos.vue"),
       },
       {
         path: "user/:user_id",
-        name: Views.USER,
-        component: () => import("../views/UserView.vue"),
+        // name: Views.USER,
+        component: () => import("../views/Profile.vue"),
         children: [
           {
             name: Views.USER_POSTS,
-            path: "posts",
+            path: "",
             component: () => import("../components/lists/PostsList.vue"),
           },
           {
@@ -92,9 +82,9 @@ const routes: Array<RouteConfig> = [
         ],
       },
       {
-        path: "admin",
-        name: Views.ADMINISTRATION,
-        component: () => import("../views/admin/Administration.vue"),
+        path: "users",
+        name: Views.USERS_LIST,
+        component: () => import("../views/UsersListView.vue"),
       },
     ],
   },

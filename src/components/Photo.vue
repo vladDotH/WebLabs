@@ -4,7 +4,11 @@
       :src="photo.url.toString()"
       :alt="id"
       class="h-100 w-100"
-      :class="{ banned: photoInfo.data.status === Status.BLOCKED }"
+      :class="{
+        banned:
+          photoInfo.data.status === Status.BLOCKED &&
+          user.loader?.data?.role === Role.ADMIN,
+      }"
     />
     <BanSwitcher
       :status="photoInfo.data.status"
@@ -16,10 +20,10 @@
 
 <script lang="ts">
 import { Component, InjectReactive, Prop, Vue } from "vue-property-decorator";
-import { PhotoInfoLoader, PhotoLoader } from "@/loaders";
-import { Status } from "@/../api";
+import { PhotoInfoLoader, PhotoLoader, UserController } from "@/util";
+import { Status, Role } from "@/../api";
 import BanSwitcher from "@/components/BanSwitcher.vue";
-import Toaster, { getBanMsg } from "@/components/Toaster.vue";
+import Toaster, { States } from "@/components/Toaster.vue";
 
 // Фотография в галерее/постах
 @Component({
@@ -27,7 +31,9 @@ import Toaster, { getBanMsg } from "@/components/Toaster.vue";
 })
 export default class Photo extends Vue {
   private Status = Status;
+  private Role = Role;
   @InjectReactive() readonly toaster!: Toaster | null;
+  @InjectReactive() readonly user!: UserController;
   @Prop({ required: true }) readonly id!: number;
 
   private photo: PhotoLoader | null = null;
@@ -40,7 +46,10 @@ export default class Photo extends Vue {
   }
 
   private switchStatus(s: Status) {
-    this.toaster?.show(s, getBanMsg(s));
+    this.toaster?.show(
+      s === Status.ACTIVE ? "Разблокировано" : "Заблокировано",
+      s === Status.ACTIVE ? States.SUCCESS : States.DANGER
+    );
     this.photoInfo?.updateStatus(s);
   }
 }

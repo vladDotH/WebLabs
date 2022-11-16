@@ -2,40 +2,56 @@ import {
   PersonalData,
   Photo,
   Post,
-  UserStatusData,
-  User,
-  UserData,
   Resource,
+  Role,
+  Status,
   StatusData,
+  User,
   UserAuthData,
-  Message,
+  UserData,
+  UserSignUpData,
+  UserStatusData,
 } from "../../api";
-import { Model } from "./index";
-import _ from "lodash";
+import { Model, nowISO } from "./index";
+import fs from "fs/promises";
+import path from "path";
 
 // Логика соц сети
 export class NetworkModel {
   private users: Model<User> = new Model<User>();
   private photos: Model<Photo> = new Model<Photo>();
   private posts: Model<Post> = new Model<Post>();
-  private messages: Model<Message> = new Model<Message>();
+  readonly storagePath: string;
 
   constructor(
     users: User[],
     photos: Photo[],
     posts: Post[],
-    messages: Message[]
+    storagePath: string
   ) {
     users.forEach((u) => this.users.add(u));
     photos.forEach((p) => this.photos.add(p));
     posts.forEach((p) => this.posts.add(p));
-    messages.forEach((m) => this.messages.add(m));
+    this.storagePath = storagePath;
   }
 
   // Регистрация пользователя
-  signIn(user: User): number | null {
+  signUp(user: UserSignUpData): number | null {
     if (!this.users.list.find((u) => u.email == user.email))
-      return this.users.add(user);
+      return this.users.add({
+        id: 0,
+        role: Role.USER,
+        status: Status.UNCONFIRMED,
+        photoId: null,
+        friends: [],
+        friendsRequests: [],
+        name: user.name,
+        surname: user.surname,
+        lastName: user.lastName,
+        birthDate: user.birthDate,
+        email: user.email,
+        password: user.password,
+      });
     else return null;
   }
 
@@ -95,13 +111,9 @@ export class NetworkModel {
     return items.filter((item) => item.userId == userId).map((item) => item.id);
   }
 
-  private getItem<T extends Resource>(id: number, items: T[]): T | null {
-    return items.find((item) => item.id == id) ?? null;
-  }
-
   // Список id постов пользователя
   getPosts(userId: number): number[] {
-    return this.getItems(userId, this.posts.list);
+    return this.getItems(userId, this.posts.list).reverse();
   }
 
   // Получение поста
@@ -110,13 +122,20 @@ export class NetworkModel {
   }
 
   // Добавление поста
-  addPost(post: Post): number {
-    return this.posts.add(post);
+  addPost(id: number, text: string, photosId: number[]): number {
+    return this.posts.add({
+      id: 0,
+      text: text,
+      userId: id,
+      photosId: photosId,
+      time: nowISO(),
+      status: Status.ACTIVE,
+    });
   }
 
   // Список id фотографий пользователя
   getPhotos(userId: number): number[] {
-    return this.getItems(userId, this.photos.list);
+    return this.getItems(userId, this.photos.list).reverse();
   }
 
   // Получение фотографии
@@ -125,8 +144,14 @@ export class NetworkModel {
   }
 
   // Добавление фотографии
-  addPhoto(photo: Photo): number {
-    return this.photos.add(photo);
+  addPhoto(id: number, path: string): number {
+    return this.photos.add({
+      id: 0,
+      status: Status.ACTIVE,
+      time: nowISO(),
+      file: path,
+      userId: id,
+    });
   }
 
   // Список id постов друзей
@@ -135,10 +160,10 @@ export class NetworkModel {
       this.getUser(id)
         ?.friends.map((user) => this.getPosts(user))
         .flat() ?? []
-    );
+    ).sort((a, b) => b - a);
   }
 
-  private updateResourceStatus<T extends StatusData>(
+  private updateResourceStatus<T extends Resource>(
     res: T | null,
     sd: StatusData
   ) {
@@ -155,36 +180,58 @@ export class NetworkModel {
     this.updateResourceStatus(this.getPhoto(id), sd);
   }
 
-  // Список id пользователей у которых есть чат с пользователем (есть сообщения)
-  getChatsSources(userId: number): number[] {
-    return Object.keys(
-      _.groupBy(
-        this.messages.list.filter(
-          (msg) => msg.userId == userId || msg.destId == userId
-        ),
-        (msg) => (msg.userId == userId ? msg.destId : userId)
-      )
-    ).map((key) => parseInt(key));
+  deletePhoto(id: number) {
+    const photo = this.getPhoto(id);
+    if (photo) fs.unlink(path.resolve(this.storagePath, photo.file));
+    this.photos.remove(id);
   }
 
-  // Список id сообщений в чате между пользователями
-  getChatMessages(userId: number, companionId: number): number[] {
-    return this.messages.list
-      .filter(
-        (msg) =>
-          (msg.userId == userId && msg.destId == companionId) ||
-          (msg.userId == companionId && msg.destId == userId)
-      )
-      .map((msg) => msg.id);
+  updateAvatar(id: number, path: string) {
+    const user = this.getUser(id);
+    if (user) {
+      if (user.photoId) this.deletePhoto(user.photoId);
+      user.photoId = this.addPhoto(id, path) ?? user.photoId;
+    }
   }
 
-  // Получение сообщения
-  getMessage(id: number) {
-    return this.messages.find(id);
+  deleteAvatar(id: number) {
+    const user = this.getUser(id);
+    if (user?.photoId) {
+      this.deletePhoto(user.photoId);
+      user.photoId = null;
+    }
   }
 
-  // Добавление сообщения
-  addMessage(msg: Message) {
-    this.messages.add(msg);
+  // Запрос/принятие дружбы
+  friendRequest(id: number, friendId: number) {
+    const u1 = this.getUser(id),
+      u2 = this.getUser(friendId);
+    if (u1 && u2) {
+      if (u1.friendsRequests.includes(u2.id)) {
+        u1.friendsRequests.splice(u1.friendsRequests.indexOf(u2.id), 1);
+        u1.friends.push(u2.id);
+        u2.friends.push(u1.id);
+      } else {
+        u2.friendsRequests.push(u1.id);
+      }
+    }
+  }
+
+  // Отклонение запроса дружбы / удаление из друзей
+  friendDecline(id: number, friendId: number) {
+    if (id !== friendId) {
+      const u1 = this.getUser(id),
+        u2 = this.getUser(friendId);
+      if (u1 && u2) {
+        if (u1.friends.includes(u2.id)) {
+          u1.friends.splice(u1.friends.indexOf(u2.id), 1);
+          u2.friends.splice(u2.friends.indexOf(u1.id), 1);
+        } else if (u1.friendsRequests.includes(u2.id)) {
+          u1.friendsRequests.splice(u1.friendsRequests.indexOf(u2.id), 1);
+        } else if (u2.friendsRequests.includes(u1.id)) {
+          u2.friendsRequests.splice(u2.friendsRequests.indexOf(u1.id), 1);
+        }
+      }
+    }
   }
 }

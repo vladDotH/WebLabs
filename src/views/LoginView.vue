@@ -32,9 +32,19 @@
           required
         />
       </div>
-      <div class="mt-4 row d-flex justify-content-center">
-        <button type="submit" class="btn btn-primary col-6 fs-3 fw-bold">
+      <div
+        class="mt-4 d-flex flex-column align-items-center justify-content-center fs-3 fw-bold gap-2"
+      >
+        <button type="submit" class="btn btn-primary col-8 col-sm-6">
           Вход
+        </button>
+
+        <button
+          type="button"
+          @click="register"
+          class="btn btn-info col-8 col-sm-6"
+        >
+          Регистрация
         </button>
       </div>
     </form>
@@ -43,35 +53,35 @@
 
 <script lang="ts">
 import { Component, InjectReactive, Vue } from "vue-property-decorator";
-import axios from "axios";
-import { config, Status, UserAuthData } from "@/../api";
-import Toaster from "@/components/Toaster.vue";
+import { UserAuthData } from "@/../api";
+import Toaster, { States } from "@/components/Toaster.vue";
 import { Views } from "@/router";
+import SignUpModal from "@/components/forms/SignUpModal.vue";
+import { UserController } from "@/util";
 
 // Страница входа
 @Component({})
 export default class LoginView extends Vue {
   @InjectReactive() readonly toaster!: Toaster | null;
+  @InjectReactive() readonly signUp!: SignUpModal | null;
   private user: UserAuthData = { email: "", password: "" };
   private valid = true;
 
-  private readonly url = new URL(
-    config.endpoints.login,
-    config.server
-  ).toString();
-
   private async submit() {
-    try {
-      await axios.post<UserAuthData>(this.url, this.user);
+    if (await UserController.login(this.user))
       this.$router.push({ name: Views.PROFILE });
-    } catch (err) {
-      this.toaster?.show(Status.BLOCKED, "Неверные данные для входа");
+    else {
+      this.toaster?.show("Неверные данные для входа", States.DANGER);
       this.valid = false;
     }
   }
 
   private reset() {
     this.valid = true;
+  }
+
+  register() {
+    this.signUp?.show();
   }
 }
 </script>

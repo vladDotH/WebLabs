@@ -1,16 +1,16 @@
 <template>
   <router-link
     :to="{
-      name: Views.USER,
+      name: Views.USER_POSTS,
       params: { user_id: this.loader.id.toString() },
     }"
     class="position-relative card-image"
+    :class="{ 'self-profile': $route.name === Views.PROFILE }"
   >
     <font-awesome-icon
       icon="fa-circle-arrow-left"
-      class="position-absolute text-info open w-100 h-100 bg-transparent"
+      class="position-absolute text-info open w-100 h-100 bg-white hover"
     />
-
     <font-awesome-icon
       v-if="!loader.data.photoId"
       icon="fa-circle-user"
@@ -22,7 +22,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import { UserLoader } from "@/loaders";
+import { UserLoader } from "@/util";
 import { Views } from "@/router";
 
 // Иконка пользователя
@@ -54,6 +54,13 @@ export default class UserThumbnail extends Vue {
     .open {
       opacity: 1;
     }
+  }
+}
+
+.self-profile {
+  cursor: default;
+  .hover {
+    display: none;
   }
 }
 </style>

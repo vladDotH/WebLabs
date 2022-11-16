@@ -1,34 +1,22 @@
 <template>
-  <section class="container">
-    <div class="col-lg-8 m-auto">
-      <UsersList :list="friends.list" />
-    </div>
+  <section v-if="user.loader?.data">
+    <h3 v-if="user.loader.data.friendsRequests.length" class="mt-3">Заявки</h3>
+    <UsersList :list="user.loader.data.friendsRequests" />
+    <h3 class="mt-3">Друзья</h3>
+    <UsersList :list="user.loader.data.friends" />
   </section>
 </template>
 
 <script lang="ts">
 import { Component, InjectReactive, Vue } from "vue-property-decorator";
-import axios from "axios";
-import { config, Status, UserAuthData } from "@/../api";
-import Toaster from "@/components/Toaster.vue";
-import { Views } from "@/router";
-import { FriendsLoader, FriendsPostsLoader, SelfLoader } from "@/loaders";
+import { UserController } from "@/util";
 import UsersList from "@/components/lists/UsersList.vue";
 
-// Страница входа
 @Component({
   components: { UsersList },
 })
 export default class Friends extends Vue {
-  @InjectReactive() readonly self!: SelfLoader;
-  friends: FriendsLoader | null = null;
-
-  private created() {
-    if (this.self.id) {
-      this.friends = new FriendsLoader(this.self.id);
-      this.friends.fetch();
-    }
-  }
+  @InjectReactive() readonly user!: UserController;
 }
 </script>
 

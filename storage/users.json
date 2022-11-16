@@ -10,13 +10,12 @@
     "status": 0,
     "role": 1,
     "friends": [
-      2,
-      7
+      2
     ],
     "friendsRequests": [
-      6, 8
+      6
     ],
-    "photoId": 2
+    "photoId": null
   },
   {
     "id": 2,
@@ -98,7 +97,7 @@
       8
     ],
     "friendsRequests": [],
-    "photoId": 8
+    "photoId": 12
   },
   {
     "id": 7,
@@ -111,13 +110,12 @@
     "status": 0,
     "role": 0,
     "friends": [
-      1,
       2,
       6,
       8
     ],
     "friendsRequests": [],
-    "photoId": 4
+    "photoId": 14
   },
   {
     "id": 8,
@@ -133,7 +131,7 @@
       6,
       7
     ],
-    "friendsRequests": [],
+    "friendsRequests": [1],
     "photoId": 10
   }
 ]

@@ -1,31 +1,24 @@
 <template>
-  <section class="container">
-    <div class="col-lg-8 m-auto">
-      <PhotosList :list="photos.list" class="mt-3"></PhotosList>
-    </div>
+  <section>
+    <PhotosList :list="photos.list" class="mt-3"></PhotosList>
   </section>
 </template>
 
 <script lang="ts">
 import { Component, InjectReactive, Vue } from "vue-property-decorator";
-import axios from "axios";
-import { config, Status, UserAuthData } from "@/../api";
-import Toaster from "@/components/Toaster.vue";
-import { Views } from "@/router";
 import PhotosList from "@/components/lists/PhotosList.vue";
-import { FriendsPostsLoader, PhotosLoader, SelfLoader } from "@/loaders";
+import { PhotosLoader, UserController } from "@/util";
 
-// Страница входа
 @Component({
   components: { PhotosList },
 })
 export default class Photos extends Vue {
-  @InjectReactive() readonly self!: SelfLoader;
+  @InjectReactive() readonly user!: UserController;
   photos: PhotosLoader | null = null;
 
   private created() {
-    if (this.self.id) {
-      this.photos = new PhotosLoader(this.self.id);
+    if (this.user.id) {
+      this.photos = new PhotosLoader(this.user.id);
       this.photos.fetch();
     }
   }

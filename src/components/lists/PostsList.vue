@@ -1,11 +1,8 @@
 <template>
   <section class="m-auto">
-    <Post
-      v-for="post of list"
-      :key="post"
-      :id="post"
-      class="border mt-3"
-    ></Post>
+    <transition-group name="list">
+      <Post v-for="post of list" :key="post" :id="post" class="border mt-3"
+    /></transition-group>
   </section>
 </template>
 
@@ -21,4 +18,15 @@ import List from "@/components/lists/List";
 export default class PostsList extends List {}
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.5s;
+  max-height: 100vh;
+}
+.list-enter,
+.list-leave-to {
+  opacity: 0;
+  max-height: 0;
+}
+</style>

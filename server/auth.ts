@@ -2,7 +2,7 @@ import passport from "passport";
 import { JwtFromRequestFunction, Strategy as JwtStrategy } from "passport-jwt";
 import { Router } from "express";
 import jwt from "jsonwebtoken";
-import { Indexed, Role, User, UserAuthData } from "../api";
+import { Indexed, UserAuthData, UserSignUpData } from "../api";
 import { NetworkModel } from "./model";
 
 // Закрытый ключ
@@ -33,10 +33,10 @@ export function createAuthRouter(model: NetworkModel): Router {
 
   // Регистрация пользователя
   authRouter.post("/signup", (req, res) => {
-    const user = req.body as User;
-    const id = model.signIn(user);
+    const user = req.body as UserSignUpData;
+    const id = model.signUp(user);
     console.log("signup: ", user, id);
-    res.status(id ? 200 : 401);
+    res.status(id ? 200 : 401).end();
   });
 
   // Вход по email и паролю, устанавливает токен в куки

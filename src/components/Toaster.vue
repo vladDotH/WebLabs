@@ -4,7 +4,10 @@
       <div class="toast d-block m-0">
         <div
           class="toast-body alert m-0"
-          :class="status === Status.ACTIVE ? 'alert-success' : 'alert-danger'"
+          :class="
+            'alert-' +
+            ['primary', 'secondary', 'success', 'warning', 'danger'][state]
+          "
         >
           {{ this.msg }}
         </div>
@@ -14,11 +17,19 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Vue } from "vue-property-decorator";
 import { Status } from "@/../api";
 
-export function getBanMsg(status: Status): string {
-  return status == Status.ACTIVE ? "Разблокировано" : "Заблокировано";
+// export function getBanMsg(status: Status): string {
+//   return status == Status.ACTIVE ? "Разблокировано" : "Заблокировано";
+// }
+
+export enum States {
+  PRIMARY,
+  SECONDARY,
+  SUCCESS,
+  WARNING,
+  DANGER,
 }
 
 // Компонент вывода всплывающих сообщений
@@ -27,26 +38,40 @@ export function getBanMsg(status: Status): string {
 })
 export default class Toaster extends Vue {
   private Status = Status;
-  @Prop({ default: 1500 }) interval!: number;
 
   private msg = "";
-  private status: Status = Status.UNCONFIRMED;
+  private state: States = States.PRIMARY;
   private visible = false;
   private timerId = 0;
 
-  show(status: Status, msg: string) {
-    this.status = status;
+  show(
+    msg: string,
+    state: States = States.PRIMARY,
+    delay = 1500,
+    sound?: HTMLAudioElement
+  ) {
+    this.state = state;
     this.msg = msg;
     this.visible = true;
     clearTimeout(this.timerId);
     this.timerId = setTimeout(() => {
       this.visible = false;
-    }, this.interval);
+    }, delay);
+    if (sound)
+      try {
+        sound.play();
+      } catch (e) {
+        console.log("Error during playing sound");
+      }
   }
 }
 </script>
 
 <style scoped lang="scss">
+.toast-container {
+  z-index: 5000;
+}
+
 .toast-enter-active,
 .toast-leave-active,
 .alert {

@@ -1,4 +1,4 @@
-import { config } from "@/../api";
+import { config } from "../../../api";
 import axios from "axios";
 import { ILoader, IndexedLoader } from "./base";
 
@@ -65,12 +65,12 @@ export class FriendsLoader extends UserDataListLoader {
   }
 }
 
-// Загрузчик списка запросов в друзья
-export class FriendsRequestsLoader extends UserDataListLoader {
-  get endpoint(): string {
-    return config.endpoints.friendsRequests;
-  }
-}
+// // Загрузчик списка запросов в друзья
+// export class FriendsRequestsLoader extends UserDataListLoader {
+//   get endpoint(): string {
+//     return config.endpoints.friendsRequests;
+//   }
+// }
 
 // Загрузчик постов друзей пользователя
 export class FriendsPostsLoader extends PostsLoader {

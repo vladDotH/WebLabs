@@ -1,11 +1,9 @@
 <template>
-  <div id="app">
-    <!--    <main class="view col-md-8 col-xl-6 m-auto">-->
+  <div id="app" class="min-vh-100">
     <router-view />
-    <!--    </main>-->
 
     <Toaster class="position-fixed bottom-0 end-0 p-3" ref="toaster" />
-    <RedactModal ref="redact" />
+    <SignUpModal ref="signUp" />
   </div>
 </template>
 
@@ -13,26 +11,29 @@
 import { Component, ProvideReactive, Vue } from "vue-property-decorator";
 import { Views } from "./router";
 import Toaster from "@/components/Toaster.vue";
-import RedactModal from "@/components/RedactModal.vue";
+import SignUpModal from "@/components/forms/SignUpModal.vue";
 
 @Component({
-  components: { RedactModal, Toaster },
+  components: {
+    SignUpModal,
+    Toaster,
+  },
 })
 export default class App extends Vue {
   private Views = Views;
 
   $refs!: {
     toaster: Toaster;
-    redact: RedactModal;
+    signUp: SignUpModal;
   };
 
   private mounted() {
     this.toaster = this.$refs.toaster;
-    this.redact = this.$refs.redact;
+    this.signUp = this.$refs.signUp;
   }
 
   @ProvideReactive() toaster: Toaster | null = null;
-  @ProvideReactive() redact: RedactModal | null = null;
+  @ProvideReactive() signUp: SignUpModal | null = null;
 }
 </script>
 

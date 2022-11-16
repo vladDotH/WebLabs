@@ -4,10 +4,10 @@ import { config } from "../api";
 import { createAuthRouter, passport, secretKey } from "./auth";
 import cookieParser from "cookie-parser";
 import { createNetworkRouter } from "./router";
-import fs from "fs";
-import path from "path";
-import { NetworkModel } from "./model";
+import { NetworkModel, load } from "./model";
 import multer from "multer";
+import io from "socket.io";
+import { SocketManager } from "./websocket";
 
 const app = express();
 const port = 3000;
@@ -15,17 +15,22 @@ const port = 3000;
 const storagePath = "./storage";
 export const uploader = multer({ dest: storagePath });
 
-function load<T>(file: string): T {
-  return JSON.parse(
-    fs.readFileSync(path.resolve(storagePath, file), "utf-8")
-  ) as T;
-}
-
 const model = new NetworkModel(
-  load("users.json"),
-  load("photos.json"),
-  load("posts.json"),
-  load("messages.json")
+  load("users.json", storagePath),
+  load("photos.json", storagePath),
+  load("posts.json", storagePath),
+  storagePath
+);
+
+const httpServer = app.listen(port, config.serverHost, function () {
+  console.log(`Server started at http://${config.serverHost}:${port}`);
+});
+
+const socket = new SocketManager(
+  new io.Server(httpServer, {
+    cors: { origin: config.client, credentials: true },
+  }),
+  secretKey
 );
 
 app.use(
@@ -46,9 +51,5 @@ app.use(
       res.locals.user = user;
       next();
     })(req, res, next),
-  createNetworkRouter(model, storagePath, uploader)
+  createNetworkRouter(model, socket, storagePath, uploader)
 );
-
-app.listen(port, config.serverHost, function () {
-  console.log(`Server started at http://${config.serverHost}:${port}`);
-});

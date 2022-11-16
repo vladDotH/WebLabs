@@ -1,29 +1,36 @@
 <template>
-  <section class="container">
-    <div class="col-lg-8 m-auto">
-      <button class="btn btn-primary mt-3">Новая запись</button>
-      <PostsList :list="posts.list"></PostsList>
-    </div>
+  <section>
+    <PostsList :list="posts.list" class="mb-2"></PostsList>
   </section>
 </template>
 
 <script lang="ts">
 import { Component, InjectReactive, Vue } from "vue-property-decorator";
 
-import { FriendsPostsLoader, SelfLoader } from "@/loaders";
+import { FriendsPostsLoader, SocketManager, UserController } from "@/util";
 import PostsList from "@/components/lists/PostsList.vue";
+import { UserData } from "../../api";
 
-// Страница входа
 @Component({ components: { PostsList } })
 export default class News extends Vue {
-  @InjectReactive() readonly self!: SelfLoader;
+  @InjectReactive() readonly user!: UserController;
+  @InjectReactive() readonly socket!: SocketManager;
   posts: FriendsPostsLoader | null = null;
 
   private created() {
-    if (this.self.id) {
-      this.posts = new FriendsPostsLoader(this.self.id);
+    if (this.user.id) {
+      this.posts = new FriendsPostsLoader(this.user.id);
       this.posts.fetch();
     }
+    this.socket.addListener(this.postsUpdate);
+  }
+
+  private beforeDestroy() {
+    this.socket.removeListener(this.postsUpdate);
+  }
+
+  private postsUpdate(user: UserData) {
+    this.posts?.fetch();
   }
 }
 </script>
