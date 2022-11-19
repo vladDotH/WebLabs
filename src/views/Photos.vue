@@ -9,6 +9,7 @@ import { Component, InjectReactive, Vue } from "vue-property-decorator";
 import PhotosList from "@/components/lists/PhotosList.vue";
 import { PhotosLoader, UserController } from "@/util";
 
+// Страница своих фотографий
 @Component({
   components: { PhotosList },
 })

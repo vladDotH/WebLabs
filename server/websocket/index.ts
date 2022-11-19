@@ -6,11 +6,12 @@ import { ExtendedError } from "socket.io/dist/namespace";
 
 export type InterServerEvents = EventsMap;
 
+// Данные в соединении вебсокета
 export interface SocketData {
   user: UserData;
 }
 
-// Декоратор exporess-обработчиков для работы с socket.io
+// Декоратор express-обработчиков для работы с socket.io
 export function wrapSocketMW(mw: Handler) {
   return (
     socket: io.Socket,

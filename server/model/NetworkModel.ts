@@ -12,15 +12,15 @@ import {
   UserSignUpData,
   UserStatusData,
 } from "../../api";
-import { Model, nowISO } from "./index";
+import { ModelCollection, nowISO } from "./index";
 import fs from "fs/promises";
 import path from "path";
 
 // Логика соц сети
 export class NetworkModel {
-  private users: Model<User> = new Model<User>();
-  private photos: Model<Photo> = new Model<Photo>();
-  private posts: Model<Post> = new Model<Post>();
+  private users: ModelCollection<User> = new ModelCollection<User>();
+  private photos: ModelCollection<Photo> = new ModelCollection<Photo>();
+  private posts: ModelCollection<Post> = new ModelCollection<Post>();
   readonly storagePath: string;
 
   constructor(
@@ -69,15 +69,15 @@ export class NetworkModel {
   }
 
   // Обновление персональной информации
-  updatePersonal(id: number, stat: PersonalData) {
+  updatePersonal(id: number, data: PersonalData) {
     const user = this.getUser(id);
     if (user)
       [user.surname, user.name, user.lastName, user.email, user.birthDate] = [
-        stat.surname,
-        stat.name,
-        stat.lastName,
-        stat.email,
-        stat.birthDate,
+        data.surname,
+        data.name,
+        data.lastName,
+        data.email,
+        data.birthDate,
       ];
   }
 
@@ -186,6 +186,7 @@ export class NetworkModel {
     this.photos.remove(id);
   }
 
+  // Обновление фотографии профиля
   updateAvatar(id: number, path: string) {
     const user = this.getUser(id);
     if (user) {

@@ -51,7 +51,7 @@ import { Component, Vue } from "vue-property-decorator";
 import { Modal } from "bootstrap";
 import { UserController } from "@/util";
 
-// Всплывающее окно редактирования пользователя
+// Всплывающее окно обновление фотографии профиля
 @Component
 export default class UpdateAvatarModal extends Vue {
   private modal!: Modal;
@@ -68,7 +68,6 @@ export default class UpdateAvatarModal extends Vue {
 
   show(user: UserController) {
     this.user = user;
-    // console.log(this.modal, this.user, this.$refs.form);
     this.modal.show();
   }
 

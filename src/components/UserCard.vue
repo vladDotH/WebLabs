@@ -115,7 +115,7 @@ export default class UserCard extends Vue {
   private loader: UserLoader | null = null;
 
   private async mounted() {
-    if (this.id == this.user?.id) this.loader = this.user.loader;
+    if (this.id === this.user?.id) this.loader = this.user.loader;
     else {
       this.loader = new UserLoader(this.id);
       await this.loader.fetch();
@@ -126,7 +126,7 @@ export default class UserCard extends Vue {
     if (this.loader?.data)
       this.redact?.show(
         this.loader,
-        this.user?.loader?.data?.role == Role.ADMIN
+        this.user?.loader?.data?.role === Role.ADMIN
       );
   }
 

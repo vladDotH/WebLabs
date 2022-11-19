@@ -29,7 +29,6 @@ export class SocketManager {
       .use((socket, next) =>
         wrapSocketMW(
           passport.authenticate("jwt", (err, user, info) => {
-            console.log("socket user:", user);
             if (user) {
               socket.data.user = user;
               next();
@@ -39,11 +38,9 @@ export class SocketManager {
       )
       // Обработка подключения, добавление сокета в пул
       .on("connection", (socket) => {
-        console.log("connection");
         if (socket.data.user) {
           this.pool.set(socket.data.user.id, socket);
           socket.on("disconnect", (reason) => {
-            console.log("disconnect");
             this.pool.delete(socket.data.user!.id);
           });
         }

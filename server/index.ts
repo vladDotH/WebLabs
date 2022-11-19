@@ -44,6 +44,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(passport.initialize());
 app.use("/api", createAuthRouter(model));
+// Подключение маршрутизатора соцсети и передача всем его обработчикам объекта авторизованного пользователя
 app.use(
   "/api",
   (req, res, next) =>

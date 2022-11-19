@@ -69,7 +69,7 @@ export default class LoginView extends Vue {
 
   private async submit() {
     if (await UserController.login(this.user))
-      this.$router.push({ name: Views.PROFILE });
+      await this.$router.push({ name: Views.PROFILE });
     else {
       this.toaster?.show("Неверные данные для входа", States.DANGER);
       this.valid = false;

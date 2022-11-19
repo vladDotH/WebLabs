@@ -65,13 +65,6 @@ export class FriendsLoader extends UserDataListLoader {
   }
 }
 
-// // Загрузчик списка запросов в друзья
-// export class FriendsRequestsLoader extends UserDataListLoader {
-//   get endpoint(): string {
-//     return config.endpoints.friendsRequests;
-//   }
-// }
-
 // Загрузчик постов друзей пользователя
 export class FriendsPostsLoader extends PostsLoader {
   get endpoint(): string {

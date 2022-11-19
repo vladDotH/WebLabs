@@ -12,6 +12,7 @@ import { Component, InjectReactive, Vue } from "vue-property-decorator";
 import { UserController } from "@/util";
 import UsersList from "@/components/lists/UsersList.vue";
 
+// Список друзей
 @Component({
   components: { UsersList },
 })

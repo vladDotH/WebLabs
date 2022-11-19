@@ -2,7 +2,7 @@ import passport from "passport";
 import { JwtFromRequestFunction, Strategy as JwtStrategy } from "passport-jwt";
 import { Router } from "express";
 import jwt from "jsonwebtoken";
-import { Indexed, UserAuthData, UserSignUpData } from "../api";
+import { Indexed, Status, UserAuthData, UserSignUpData } from "../api";
 import { NetworkModel } from "./model";
 
 // Закрытый ключ
@@ -26,7 +26,9 @@ export function createAuthRouter(model: NetworkModel): Router {
         secretOrKey: secretKey,
       },
       (payload: Indexed, done) => {
-        done(null, model.getUserData(payload.id) ?? false);
+        const data = model.getUserData(payload.id);
+        if (!data || data?.status === Status.BLOCKED) done(null, false);
+        else done(null, data);
       }
     )
   );
@@ -35,7 +37,6 @@ export function createAuthRouter(model: NetworkModel): Router {
   authRouter.post("/signup", (req, res) => {
     const user = req.body as UserSignUpData;
     const id = model.signUp(user);
-    console.log("signup: ", user, id);
     res.status(id ? 200 : 401).end();
   });
 
@@ -43,18 +44,20 @@ export function createAuthRouter(model: NetworkModel): Router {
   authRouter.post("/login", (req, res) => {
     const data = req.body as UserAuthData,
       user = model.authorize(data);
-    console.log("login: ", data);
     if (user) {
-      const token = jwt.sign({ id: user.id }, secretKey, {
-        expiresIn: "1h",
-      });
-      res.cookie("token", token, {
-        maxAge: 60 * 60 * 1000,
-        httpOnly: true,
-        signed: true,
-      });
+      if (user.status === Status.BLOCKED) res.sendStatus(403);
+      else {
+        const token = jwt.sign({ id: user.id }, secretKey, {
+          expiresIn: "1h",
+        });
+        res.cookie("token", token, {
+          maxAge: 60 * 60 * 1000,
+          httpOnly: true,
+          signed: true,
+        });
 
-      res.sendStatus(200);
+        res.sendStatus(200);
+      }
     } else res.sendStatus(401);
   });
 

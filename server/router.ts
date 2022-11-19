@@ -24,10 +24,10 @@ export function createNetworkRouter(
 
   // Проверка объекта пользователя в res.locals.user
   router.use((req, res, next) => {
-    if (res.locals.user) {
-      // console.log(res.locals.user);
-      next();
-    } else res.status(500).end("User authentication error");
+    if (!res.locals.user) res.status(500).end("User authentication error");
+    else if (res.locals.user.status === Status.BLOCKED)
+      res.status(403).end("Blocked user");
+    else next();
   });
 
   // Получение собственного id
@@ -71,6 +71,8 @@ export function createNetworkRouter(
       res.sendStatus(200);
     } else res.sendStatus(204);
   });
+
+  // Удаление фотографии профиля
   router.delete("/avatar", (req, res) => {
     model.deleteAvatar(res.locals.user.id);
     res.sendStatus(200);

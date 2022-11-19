@@ -7,15 +7,18 @@ export class UserController {
   id: number | null = null;
   loader: UserLoader | null = null;
 
+  // Загрузка собственного id
   async fetchId() {
     this.id = (await axios.get<Indexed>(this.self.toString())).data.id;
     this.loader = new UserLoader(this.id);
   }
 
+  // Проверка прав администратора
   get isAdmin(): boolean {
     return this.loader?.data?.role === Role.ADMIN;
   }
 
+  // Регистрация
   static readonly signUpUrl = new URL(config.endpoints.signUp, config.server);
   static async signUp(user: UserSignUpData): Promise<boolean> {
     try {
@@ -26,6 +29,7 @@ export class UserController {
     }
   }
 
+  // Вход
   static readonly loginUrl = new URL(config.endpoints.login, config.server);
   static async login(user: UserAuthData): Promise<boolean> {
     try {
@@ -36,15 +40,15 @@ export class UserController {
     }
   }
 
-  static readonly avatarUrl = new URL(config.endpoints.avatar, config.server);
+  readonly avatarUrl = new URL(config.endpoints.avatar, config.server);
   async updateAvatar(file: File) {
     const fd = new FormData();
     fd.append("avatar", file);
-    await axios.put(UserController.avatarUrl.toString(), fd);
+    await axios.put(this.avatarUrl.toString(), fd);
   }
 
   async deleteAvatar() {
-    await axios.delete(UserController.avatarUrl.toString());
+    await axios.delete(this.avatarUrl.toString());
   }
 
   getFriendUrl(id: number): URL {
@@ -62,6 +66,4 @@ export class UserController {
     await this.loader?.fetch();
     await loader.fetch();
   }
-
-  // makePost() {}
 }

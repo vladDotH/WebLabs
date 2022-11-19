@@ -8,13 +8,11 @@ Vue.use(VueRouter);
 export enum Views {
   LOGIN = "login",
 
-  NETWORK = "network",
   PROFILE = "profile",
   NEWS = "news",
   FRIENDS = "friends",
   PHOTOS = "photos",
 
-  USER = "user",
   USER_POSTS = "user_posts",
   USER_PHOTOS = "user_photos",
   USER_FRIENDS = "user_friends",
@@ -31,7 +29,6 @@ const routes: Array<RouteConfig> = [
   },
   {
     path: "/",
-    // name: Views.NETWORK,
     component: () => import("../views/Network.vue"),
     children: [
       {
@@ -56,7 +53,6 @@ const routes: Array<RouteConfig> = [
       },
       {
         path: "user/:user_id",
-        // name: Views.USER,
         component: () => import("../views/Profile.vue"),
         children: [
           {

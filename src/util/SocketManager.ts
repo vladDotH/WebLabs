@@ -11,9 +11,6 @@ export class SocketManager {
 
   constructor() {
     this.socket = io(config.webSocket, { withCredentials: true });
-    this.socket.on("post", (user: UserData) => {
-      console.log(user);
-    });
   }
 
   addListener(cb: (user: UserData) => void) {

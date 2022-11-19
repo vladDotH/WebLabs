@@ -44,10 +44,10 @@
 import { Component, InjectReactive, Vue } from "vue-property-decorator";
 import { Modal } from "bootstrap";
 import { UserController } from "@/util";
-import { Status, UserSignUpData } from "../../../api";
+import { UserSignUpData } from "../../../api";
 import PersonalDataRedactor from "@/components/forms/PersonalDataRedactor.vue";
 import StatusDataRedactor from "@/components/forms/StatusDataRedactor.vue";
-import Toaster from "@/components/Toaster.vue";
+import Toaster, { States } from "@/components/Toaster.vue";
 
 // Всплывающее окно регистрации
 @Component({
@@ -82,10 +82,13 @@ export default class SignUpModal extends Vue {
   private async submit() {
     if (this.usud)
       if (await UserController.signUp(this.usud)) {
-        this.toaster?.show(Status.ACTIVE, "Вы успешно зарегистрированы");
+        this.toaster?.show("Вы успешно зарегистрированы", States.SUCCESS);
         this.modal.hide();
       } else {
-        this.toaster?.show(Status.BLOCKED, "Пользователь уже существует");
+        this.toaster?.show(
+          "Пользователь c таким email-ом уже существует",
+          States.WARNING
+        );
       }
   }
 }

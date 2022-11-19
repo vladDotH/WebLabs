@@ -11,6 +11,7 @@ import { FriendsPostsLoader, SocketManager, UserController } from "@/util";
 import PostsList from "@/components/lists/PostsList.vue";
 import { UserData } from "../../api";
 
+// Страница новостей
 @Component({ components: { PostsList } })
 export default class News extends Vue {
   @InjectReactive() readonly user!: UserController;

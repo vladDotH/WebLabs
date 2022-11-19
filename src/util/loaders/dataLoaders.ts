@@ -99,6 +99,7 @@ export class PostLoader extends PublicResourceLoader<Post> {
     return config.endpoints.post;
   }
 
+  // Публикация новости
   static postUrl = new URL(config.endpoints.post, config.server);
   static async makePost(text: string, files: FileList | null): Promise<number> {
     const data = new FormData();

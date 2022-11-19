@@ -45,7 +45,7 @@ import {
 @Component({
   components: { UserCard },
 })
-export default class UserView extends Vue {
+export default class Profile extends Vue {
   private id = 0;
   private loader: ListLoader | null = null;
   @InjectReactive() readonly user!: UserController;
@@ -64,7 +64,7 @@ export default class UserView extends Vue {
   @Watch("$route")
   onRouteChange(to: Route) {
     const id = parseInt(this.$route.params.user_id);
-    if (id == this.user.id) {
+    if (id === this.user.id) {
       this.$router.push({ name: Views.PROFILE });
     }
     this.id = id;

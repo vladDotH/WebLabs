@@ -20,10 +20,7 @@
 import { Component, Vue } from "vue-property-decorator";
 import { Status } from "@/../api";
 
-// export function getBanMsg(status: Status): string {
-//   return status == Status.ACTIVE ? "Разблокировано" : "Заблокировано";
-// }
-
+// Состояние тостера (цвет алёрта)
 export enum States {
   PRIMARY,
   SECONDARY,
@@ -54,14 +51,14 @@ export default class Toaster extends Vue {
     this.msg = msg;
     this.visible = true;
     clearTimeout(this.timerId);
-    this.timerId = setTimeout(() => {
+    this.timerId = window.setTimeout(() => {
       this.visible = false;
     }, delay);
     if (sound)
       try {
         sound.play();
       } catch (e) {
-        console.log("Error during playing sound");
+        this.$rollbar.error(`Error during playing sound: ${e}`);
       }
   }
 }

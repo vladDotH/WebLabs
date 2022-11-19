@@ -6,14 +6,14 @@ import * as icons from "./icons";
 import "bootstrap";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { RollbarPlugin } from "@/rollbar/RollbarPlugin";
+import { RollbarPlugin } from "@/rollbar";
 
 library.add(icons);
 Vue.component("font-awesome-icon", FontAwesomeIcon);
 
 Vue.use(
   new RollbarPlugin({
-    accessToken: "eab95a630f7848789871044db1f99308",
+    accessToken: "482cd9074ca34bb496d382ce456c28e5",
     captureUncaught: true,
     captureUnhandledRejections: true,
     captureIp: true,
@@ -21,7 +21,8 @@ Vue.use(
 );
 
 // Логирование ошибок через rollbar
-Vue.config.errorHandler = (err, vm, info) => {
+Vue.config.errorHandler = async (err, vm, info) => {
+  vm.$rollbar.log("Error Handled:");
   vm.$rollbar.error(err);
   throw err;
 };

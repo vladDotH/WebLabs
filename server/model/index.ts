@@ -2,17 +2,20 @@ import { Indexed } from "../../api";
 import fs from "fs";
 import path from "path";
 
+// Текущее время в формате iso
 export function nowISO() {
   return new Date().toISOString();
 }
 
+// Загрузка JSON файла
 export function load<T>(file: string, storagePath: string): T {
   return JSON.parse(
     fs.readFileSync(path.resolve(storagePath, file), "utf-8")
   ) as T;
 }
 
-export class Model<T extends Indexed> {
+// Коллекция объектов модели
+export class ModelCollection<T extends Indexed> {
   readonly list: T[] = [];
   private id = 1;
 

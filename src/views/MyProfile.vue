@@ -26,7 +26,7 @@ import PostModal from "@/components/forms/PostModal.vue";
 @Component({
   components: { PostsList, UserCard },
 })
-export default class Profile extends Vue {
+export default class MyProfile extends Vue {
   @InjectReactive() readonly user!: UserController;
   @InjectReactive() readonly avatarUpdate!: UpdateAvatarModal;
   @InjectReactive() readonly postModal!: PostModal;

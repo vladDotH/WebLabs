@@ -60,10 +60,12 @@ export interface Resource extends Indexed, StatusData {
   time: string;
 }
 
+// Фотография
 export interface Photo extends Resource {
   file: string;
 }
 
+// Новость
 export interface Post extends Resource {
   text: string;
   photosId: number[];
@@ -75,6 +77,7 @@ export interface UserAuthData {
   password: string;
 }
 
+// Данные для регистрации
 export interface UserSignUpData extends PersonalData, UserAuthData {}
 
 // Настройки клиент-серверного взаимодействия
@@ -120,6 +123,7 @@ export const config = {
   },
 };
 
+// События отправляемые сервером по Вебсокету
 export interface ServerToClientEvents {
   post: (user: UserData) => void;
 }
