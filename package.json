@@ -1,19 +1,26 @@
 {
   "name": "stocks_exchange",
   "author": "Vladislav Bolkunov",
-  "homepage": "https://github.com/vladDotH/WebLabs/tree/lab4",
+  "homepage": "https://github.com/vladDotH/WebLabs/tree/lab5",
   "version": "0.1.0",
   "workspaces": [
     "./client",
-    "./server",
-    "./shared"
+    "./server"
   ],
   "scripts": {
     "client:dev": "cd client && npm run serve",
     "server:dev": "cd server && npm run start:dev",
     "client:build": "cd client && npm run build",
-    "server": "cd server && npm run build"
+    "server:build": "cd server && npm run build"
   },
-  "dependencies": {
+  "devDependencies": {
+    "@vue/eslint-config-typescript": "^9.1.0",
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-vue": "^8.0.3",
+    "@typescript-eslint/eslint-plugin": "^5.4.0",
+    "@typescript-eslint/parser": "^5.4.0",
+    "@vue/cli-plugin-eslint": "~5.0.0"
   }
 }

@@ -1,0 +1,32 @@
+[
+  {
+    "login": "admin",
+    "password": "admin",
+    "role": 1,
+    "balance": 0
+  },
+  {
+    "login": "$anatolyi$",
+    "password": "tolya",
+    "role": 0,
+    "balance": 300
+  },
+  {
+    "login": "vadim",
+    "password": "vadik",
+    "role": 0,
+    "balance": 3000
+  },
+  {
+    "login": "vladDotH",
+    "password": "vladik",
+    "role": 0,
+    "balance": 0
+  },
+  {
+    "login": "kostyan",
+    "password": "kostya",
+    "role": 0,
+    "balance": 9999
+  }
+]

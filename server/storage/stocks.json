@@ -1,0 +1,42 @@
+[
+  {
+    "key": "AAPL",
+    "company": "Apple"
+  },
+  {
+    "key": "AMD",
+    "company": "Advanced Micro Devices"
+  },
+  {
+    "key": "AMZN",
+    "company": "Amazon"
+  },
+  {
+    "key": "CSCO",
+    "company": "Cisco"
+  },
+  {
+    "key": "META",
+    "company": "Meta"
+  },
+  {
+    "key": "MSFT",
+    "company": "Mirosoft"
+  },
+  {
+    "key": "NFLX",
+    "company": "Netflix"
+  },
+  {
+    "key": "QCOM",
+    "company": "Qualcomm"
+  },
+  {
+    "key": "SBUX",
+    "company": "Starbucks"
+  },
+  {
+    "key": "TSLA",
+    "company": "Tesla"
+  }
+]
