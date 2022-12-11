@@ -4,7 +4,7 @@
     @submit.prevent="submit"
   >
     <div class="fs-3">
-      <label for="login" class="form-label">Email</label>
+      <label for="login" class="form-label">Логин</label>
       <input
         v-model="user.login"
         type="text"
