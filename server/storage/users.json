@@ -6,6 +6,12 @@
     "balance": 0
   },
   {
+    "login": "admin2",
+    "password": "password",
+    "role": 1,
+    "balance": 0
+  },
+  {
     "login": "$anatolyi$",
     "password": "tolya",
     "role": 0,

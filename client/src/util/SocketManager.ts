@@ -6,18 +6,18 @@ import {
   StocksRate,
 } from "@stocks_exchange/server";
 import { Store } from "vuex";
-import { State } from "@/store";
+import { RootState } from "@/store/root";
 
 export class SocketManager {
   private socket: Socket<ServerToClientEvents, ClientToServerEvents>;
-  private store: Store<State> | null = null;
+  private store: Store<RootState> | null = null;
 
-  constructor(store: Store<State>) {
+  constructor(store: Store<RootState>) {
     this.store = store;
     this.socket = io(config.webSocket);
     this.socket.on("postStocksRate", (rate: StocksRate) => {
-      this.store?.commit("updateRate", rate);
-      this.store?.state.cfg.fetch();
+      this.store?.commit("trades/updateRate", rate);
+      this.store?.dispatch("trades/fetchState");
     });
   }
 }

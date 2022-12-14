@@ -6,7 +6,7 @@
     <div class="fs-3">
       <label for="login" class="form-label">Логин</label>
       <input
-        v-model="user.login"
+        v-model="ad.login"
         type="text"
         class="form-control"
         :class="{ 'is-invalid': !valid }"
@@ -17,7 +17,7 @@
 
       <label for="pwd" class="mt-3 form-label">Пароль</label>
       <input
-        v-model="user.password"
+        v-model="ad.password"
         type="password"
         class="form-control"
         :class="{ 'is-invalid': !valid }"
@@ -37,18 +37,17 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { AuthData, config } from "@stocks_exchange/server";
+import { AuthData } from "@stocks_exchange/server";
 import { Views } from "@/router";
-import { UserController } from "@/util/UserController";
 
 // Страница входа
 @Component({})
 export default class LoginView extends Vue {
-  private user: AuthData = { login: "", password: "" };
+  private ad: AuthData = { login: "", password: "" };
   private valid = true;
 
   private async submit() {
-    if (await UserController.login(this.user))
+    if (await this.$store.dispatch("login", this.ad))
       this.$router.push({ name: Views.BROKERS });
     else this.valid = false;
   }

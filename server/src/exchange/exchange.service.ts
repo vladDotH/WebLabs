@@ -1,11 +1,13 @@
 import { Injectable, OnModuleInit } from "@nestjs/common";
 import {
+  ExchangeState,
   Roles,
   Stock,
   StockHistory,
   StockHistoryRecord,
-  StocksRate,
+  StockRateRecord,
   TradesConfig,
+  TradesConfigExtended,
   User,
 } from "@api";
 import { CollectionModel } from "./collection.model";
@@ -22,10 +24,14 @@ export class ExchangeService implements OnModuleInit {
   private tradesConfig: TradesConfig = {
     startDate: "2021-01-03",
     dayDelay: 1000,
+  };
+  private state: ExchangeState = {
+    date: "",
     active: false,
   };
-
-  private date: Date = new Date();
+  private dateRange: [string, string] = ["", ""];
+  private currentDate: Date = new Date();
+  private rates: StockRateRecord[] = [];
   private timerId: NodeJS.Timer | null = null;
 
   readonly storagePath = "./storage";
@@ -57,7 +63,7 @@ export class ExchangeService implements OnModuleInit {
     }
     const sample = this.stocksHistory[0];
     if (sample)
-      this.tradesConfig.dateRange = [
+      this.dateRange = [
         sample.records[0].date,
         sample.records[sample.records.length - 1].date,
       ];
@@ -127,49 +133,50 @@ export class ExchangeService implements OnModuleInit {
     return this.stocksHistory.find((s) => s.stock.key === key) ?? null;
   }
 
-  getTradesConfig() {
-    return this.tradesConfig;
+  getTradesConfig(): TradesConfigExtended {
+    return { ...this.tradesConfig, dateRange: this.dateRange };
+  }
+
+  getState() {
+    return this.state;
   }
 
   setTradesConfig(tc: TradesConfig) {
-    if (!this.tradesConfig.active)
+    if (!this.state.active)
       [this.tradesConfig.startDate, this.tradesConfig.dayDelay] = [
-        new Date(tc.startDate) < new Date(this.tradesConfig.dateRange![0])
-          ? this.tradesConfig.dateRange![0]
+        new Date(tc.startDate) < new Date(this.dateRange[0])
+          ? this.dateRange[0]
           : tc.startDate,
         tc.dayDelay,
       ];
   }
 
   getDateRange(): [string, string] {
-    return this.tradesConfig.dateRange!;
+    return this.dateRange;
   }
 
   private updateTrades() {
-    if (this.date > new Date(this.tradesConfig.dateRange![1])) {
+    if (this.currentDate > new Date(this.dateRange[1])) {
       return this.switchTrades();
     }
-
-    const isoDate = this.date.toISOString().split("T")[0];
-    const rates: StocksRate = {
-      date: isoDate,
-      stocks: this.activeStocks.map((key) => ({
-        key,
-        cost:
-          this.stocksHistory
-            .find((s) => s.stock.key === key)
-            ?.records.find((r) => r.date === isoDate)?.cost ?? 0,
-      })),
-      end: this.date >= new Date(this.tradesConfig.dateRange![1]),
-    };
-    if (rates.stocks.every((s) => s.cost > 0)) this.ws.postStocksRate(rates);
-    this.date.setDate(this.date.getDate() + 1);
+    this.state.date = this.currentDate.toISOString().split("T")[0];
+    const rates = this.activeStocks.map((key) => ({
+      key,
+      cost:
+        this.stocksHistory
+          .find((s) => s.stock.key === key)
+          ?.records.find((r) => r.date === this.state.date)?.cost ?? 0,
+    }));
+    if (rates.every((s) => s.cost > 0)) this.rates = rates;
+    this.ws.postStocksRate({ date: this.state.date, stocks: this.rates });
+    this.currentDate.setDate(this.currentDate.getDate() + 1);
   }
 
   switchTrades() {
-    this.tradesConfig.active = !this.tradesConfig.active;
-    if (this.tradesConfig.active) {
-      this.date = new Date(this.tradesConfig.startDate);
+    this.state.active = !this.state.active;
+    if (this.state.active) {
+      this.currentDate = new Date(this.tradesConfig.startDate);
+      this.updateTrades();
       this.timerId = setInterval(
         this.updateTrades.bind(this),
         this.tradesConfig.dayDelay
@@ -177,8 +184,7 @@ export class ExchangeService implements OnModuleInit {
     } else {
       if (this.timerId) clearInterval(this.timerId);
       this.ws.postStocksRate({
-        end: true,
-        date: this.date.toISOString().split("T")[0],
+        date: this.currentDate.toISOString().split("T")[0],
         stocks: [],
       });
     }

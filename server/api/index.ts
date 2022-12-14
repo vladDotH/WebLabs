@@ -57,15 +57,21 @@ export interface StockRateRecord {
 export interface StocksRate {
   date: string;
   stocks: StockRateRecord[];
-  end: boolean;
+}
+
+export interface ExchangeState {
+  date: string;
+  active: boolean;
 }
 
 // Параметры торгов
 export interface TradesConfig {
   startDate: string;
   dayDelay: number;
-  active?: boolean;
-  dateRange?: [string, string];
+}
+
+export interface TradesConfigExtended extends TradesConfig {
+  dateRange: [string, string];
 }
 
 // Параметры клиент-серверного взаимодействия

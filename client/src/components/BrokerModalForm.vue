@@ -8,7 +8,7 @@
     <div class="modal-dialog modal-dialog-centered modal-md">
       <div class="modal-content">
         <h3 class="modal-header">
-          <span v-if="loader?.id">Редактировать брокера #{{ loader.id }}</span>
+          <span v-if="buffer.id">Редактировать брокера #{{ buffer.id }}</span>
           <span v-else>Добавить брокера</span>
         </h3>
         <div class="modal-body">
@@ -48,7 +48,7 @@
           <div class="mb-3"></div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" @click="modal.hide()">
+          <button type="button" class="btn btn-secondary" @click="close">
             Отмена
           </button>
           <button
@@ -67,14 +67,12 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import { Modal } from "bootstrap";
-import { BrokerLoader, BrokersListLoader } from "@/util";
 import { Roles, User } from "@stocks_exchange/server";
 
 // Всплывающее окно добавления/редактирования брокера
 @Component({})
 export default class BrokerModalForm extends Vue {
   private modal!: Modal;
-  private loader: BrokerLoader | BrokersListLoader | null = null;
   private buffer: User = {
     balance: 0,
     password: "",
@@ -83,6 +81,9 @@ export default class BrokerModalForm extends Vue {
     stocks: [],
   };
   private invalidLogin = false;
+  private promiseResolve: (value: User | null) => void = () => {
+    /**/
+  };
 
   private resetLogin() {
     this.invalidLogin = false;
@@ -96,30 +97,39 @@ export default class BrokerModalForm extends Vue {
     this.modal = new Modal(this.$refs.form);
   }
 
-  show(loader: BrokerLoader | BrokersListLoader) {
-    this.loader = loader;
-    if (loader instanceof BrokerLoader && loader.data) {
-      this.buffer = { ...loader.data };
-    } else {
-      Object.assign(this.buffer, { login: "", password: "", balance: 0 });
-    }
+  clear() {
+    [
+      this.buffer.login,
+      this.buffer.password,
+      this.buffer.balance,
+      this.buffer.id,
+    ] = ["", "", 0, undefined];
+    this.resetLogin();
+  }
+
+  show(user?: User): Promise<User | null> {
+    if (user) this.buffer = { ...user };
     this.modal.show();
-    this.invalidLogin = false;
+    return new Promise((resolve) => {
+      this.promiseResolve = resolve;
+    });
+  }
+
+  hide() {
+    this.modal.hide();
+  }
+
+  invalidate() {
+    this.invalidLogin = true;
+  }
+
+  private close() {
+    this.promiseResolve(null);
+    this.hide();
   }
 
   private async submit() {
-    let res = 0;
-    if (this.loader instanceof BrokerLoader) {
-      res = +(await this.loader.update(this.buffer));
-    } else {
-      if (this.loader) res = await this.loader.add(this.buffer);
-    }
-    if (res) {
-      this.loader = null;
-      this.modal.hide();
-    } else {
-      this.invalidLogin = true;
-    }
+    this.promiseResolve({ ...this.buffer });
   }
 }
 </script>

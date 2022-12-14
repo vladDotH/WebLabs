@@ -1,26 +1,34 @@
 <template>
-  <section v-if="available.data && active.keys" class="row pt-3">
-    <div class="col-3">
-      <p class="text-end">Выбрать участвующих в торгах</p>
-      <ul class="list-group">
-        <li
-          class="list-group-item d-flex justify-content-between"
-          v-for="stock of available.data"
-          :key="stock.key"
-          :class="{ active: selected === stock.key }"
-          @click="select(stock.key)"
-        >
-          <span>{{ stock.key }}</span>
-          <input
-            type="checkbox"
-            @click.stop
-            @input.stop="switchStock(stock.key)"
-            :checked="active.keys.has(stock.key)"
-          />
-        </li>
-      </ul>
+  <section v-if="available && active" class="row pt-3">
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvas">
+      <div class="offcanvas-header">
+        <h5>Выбрать участвующих в торгах</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="offcanvas"
+        ></button>
+      </div>
+      <div class="offcanvas-body">
+        <StocksList :stocks-store="stocksStore" @select="select" />
+      </div>
     </div>
-    <div class="col-9" v-if="history?.data">
+
+    <div class="col-3 d-none d-lg-block">
+      <h6>Выбрать участвующих в торгах</h6>
+      <StocksList :stocks-store="stocksStore" @select="select" />
+    </div>
+
+    <div class="col-12 col-lg-9">
+      <button
+        class="d-inline d-lg-none btn btn-secondary me-2"
+        type="button"
+        data-bs-toggle="offcanvas"
+        data-bs-target="#offcanvas"
+        aria-controls="staticBackdrop"
+      >
+        <font-awesome-icon icon="fa-solid fa-bars" />
+      </button>
       <div class="btn-group" role="group">
         <input
           v-model="type"
@@ -31,7 +39,6 @@
           id="table"
         />
         <label class="btn btn-outline-primary" for="table">Таблица</label>
-
         <input
           v-model="type"
           :value="ViewTypes.GRAPHICS"
@@ -42,29 +49,31 @@
         />
         <label class="btn btn-outline-primary" for="graphics">График</label>
       </div>
-      <StockTable
-        class="overflow-scroll vh-100 pt-2"
-        :history="history.data"
-        v-if="type === ViewTypes.TABLE"
-      />
-      <StockPlot
-        class="pt-2"
-        :history="history.data"
-        v-else-if="type === ViewTypes.GRAPHICS"
-      />
+      <div v-if="history">
+        <StockTable
+          class="overflow-scroll vh-100 pt-2"
+          :history="history"
+          v-if="type === ViewTypes.TABLE"
+        />
+        <StockPlot
+          class="pt-2"
+          :history="history"
+          v-else-if="type === ViewTypes.GRAPHICS"
+        />
+      </div>
     </div>
   </section>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import {
-  ActiveStocksLoader,
-  AvailableStocksLoader,
-  StockHistoryLoader,
-} from "@/util/loaders";
 import StockTable from "@/components/StockTable.vue";
 import StockPlot from "@/components/StockPlot.vue";
+import { createStore } from "vuex-smart-module";
+import { stocks, StocksState } from "@/store/modules/stocks";
+import { Stock, StockHistory } from "@stocks_exchange/server/dist/api";
+import { Store } from "vuex";
+import StocksList from "@/components/StocksList.vue";
 
 enum ViewTypes {
   TABLE,
@@ -73,29 +82,38 @@ enum ViewTypes {
 
 // Страница активации акций и просмотра их историй
 @Component({
-  components: { StockPlot, StockTable },
+  components: { StocksList, StockPlot, StockTable },
 })
 export default class StocksView extends Vue {
   private ViewTypes = ViewTypes;
-  private available = new AvailableStocksLoader();
-  private active = new ActiveStocksLoader();
   private selected = "";
   private type: ViewTypes = ViewTypes.TABLE;
-  private history: StockHistoryLoader | null = null;
+  private stocksStore: Store<StocksState> = createStore(stocks);
 
-  private created() {
-    this.available.fetch();
-    this.active.fetch();
+  private get available(): Stock[] {
+    return this.stocksStore.state.available;
+  }
+
+  private get active(): string[] {
+    return this.stocksStore.state.active;
+  }
+
+  private get history(): StockHistory | undefined {
+    return this.stocksStore.state.history.find(
+      (h) => h.stock.key === this.selected
+    );
+  }
+
+  private async created() {
+    await this.stocksStore.dispatch("fetch");
   }
 
   private switchStock(key: string) {
-    this.active.switchStock(key);
+    this.stocksStore.dispatch("switchStock", key);
   }
 
   private select(key: string) {
     this.selected = key;
-    this.history = new StockHistoryLoader(key);
-    this.history.fetch();
   }
 }
 </script>

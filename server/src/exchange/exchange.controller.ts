@@ -13,7 +13,14 @@ import {
 import { Response } from "express";
 import { AuthGuard } from "@nestjs/passport";
 import { ExchangeService } from "./exchange.service";
-import { Stock, StockHistory, TradesConfig, User } from "@api";
+import {
+  ExchangeState,
+  Stock,
+  StockHistory,
+  TradesConfig,
+  TradesConfigExtended,
+  User,
+} from "@api";
 import { AuthService } from "./auth/auth.service";
 
 @Controller()
@@ -47,7 +54,7 @@ export class ExchangeController {
   }
 
   @UseGuards(AuthGuard("jwt"))
-  @Post("broker")
+  @Post("brokers")
   addBrokers(@Body() broker: User): number {
     return this.exchange.addBroker(broker);
   }
@@ -92,8 +99,13 @@ export class ExchangeController {
   }
 
   @Get("trades-config")
-  getTradesConfig(): TradesConfig {
+  getTradesConfig(): TradesConfigExtended {
     return this.exchange.getTradesConfig();
+  }
+
+  @Get("state")
+  getExchangeState(): ExchangeState {
+    return this.exchange.getState();
   }
 
   @UseGuards(AuthGuard("jwt"))

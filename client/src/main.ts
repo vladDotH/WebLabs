@@ -1,8 +1,8 @@
 import axios from "axios";
 import Vue from "vue";
 import App from "./App.vue";
+import { store } from "./store";
 import router from "./router";
-import store from "./store";
 import "bootstrap";
 import * as icons from "./icons";
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -20,7 +20,7 @@ axios.interceptors.request.use(function (config) {
 });
 
 new Vue({
-  router,
   store,
+  router,
   render: (h) => h(App),
 }).$mount("#app");

@@ -14,7 +14,7 @@
         <span class="navbar-toggler-icon"></span>
       </button>
       <div
-        class="collapse navbar-collapse text-white fs-5 fw-semibold justify-content-between"
+        class="collapse navbar-collapse text-white fs-5 fw-semibold justify-content-between gap-3"
         id="navbarContent"
         v-if="authorized"
       >
@@ -31,10 +31,16 @@
             </li>
           </ul>
         </div>
-        <div role="button" @click="logout">Выход</div>
+        <div class="d-flex gap-4 p-2">
+          <div>
+            <font-awesome-icon class="fs-4" icon="fa-solid fa-user" />
+            <span class="ms-1">{{ self.login }}</span>
+          </div>
+          <div role="button" @click="logout">Выход</div>
+        </div>
       </div>
     </nav>
-    <main class="container">
+    <main class="container-md">
       <transition name="main-view" mode="out-in">
         <router-view class="m-auto"></router-view>
       </transition>
@@ -49,24 +55,32 @@ import { Component, Vue, ProvideReactive } from "vue-property-decorator";
 import { Views } from "./router";
 import BrokerModalForm from "./components/BrokerModalForm.vue";
 import { SocketManager } from "@/util";
-import { UserController } from "@/util/UserController";
+import { User } from "@stocks_exchange/server";
 
 @Component({ components: { BrokerModalForm } })
 export default class App extends Vue {
   private routes = [
     ["Брокеры", Views.BROKERS],
     ["Акции", Views.STOCKS],
-    ["Торги", Views.BARGAINING],
+    ["Торги", Views.TRADES],
   ];
   private socket: SocketManager | null = null;
 
   get authorized() {
-    return this.$store.state.authorized;
+    return this.self !== null;
+  }
+
+  get self(): User | null {
+    return this.$store.state.self;
   }
 
   $refs!: {
     brokerModal: BrokerModalForm;
   };
+
+  private created() {
+    this.$store.dispatch("fetch");
+  }
 
   private mounted() {
     this.brokerModal = this.$refs.brokerModal;
@@ -74,7 +88,7 @@ export default class App extends Vue {
   }
 
   private logout() {
-    UserController.logout();
+    this.$store.dispatch("logout");
     this.$router.go(0);
   }
 
