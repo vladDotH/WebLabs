@@ -14,12 +14,14 @@
       </h3>
       <ul class="list-group">
         <li
-          class="list-group-item d-flex justify-content-between fs-4"
+          class="list-group-item d-flex justify-content-between fs-5"
           v-for="stock of rate.stocks"
           :key="stock.key"
         >
           <span>{{ stock.key }}</span>
-          <span class="badge bg-primary col-4">{{ stock.cost }}$ </span>
+          <span class="badge bg-primary col-6 col-md-4 align-middle">
+            {{ stock.cost }}$
+          </span>
         </li>
       </ul>
     </div>

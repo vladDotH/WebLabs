@@ -68,10 +68,7 @@ export class StocksActions extends Actions<
   async switchStock(key: string) {
     if (this.state.active.includes(key)) this.mutations.removeActive(key);
     else this.mutations.addActive(key);
-    return await axios.put(
-      activeUrl().toString(),
-      Array.from(this.state.active)
-    );
+    return await axios.put(activeUrl().toString(), this.state.active);
   }
 }
 
