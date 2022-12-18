@@ -18,7 +18,7 @@
         id="navbarContent"
         v-if="authorized"
       >
-        <div>
+        <div v-if="self.role === Roles.ADMIN">
           <ul class="navbar-nav">
             <li class="nav-item" v-for="route of routes" :key="route[1]">
               <router-link
@@ -31,22 +31,38 @@
             </li>
           </ul>
         </div>
+
+        <div v-else>
+          <ul class="navbar-nav">
+            <li class="nav-item p-2" id="brokerBalance">
+              Баланс: {{ Math.round(self.balance * 100) / 100 }}$
+            </li>
+            <li class="nav-item p-2">
+              <span v-if="state.active">
+                Дата: {{ new Date(state.date).toLocaleDateString() }}</span
+              >
+              <span v-else> Торги не ведутся </span>
+            </li>
+          </ul>
+        </div>
+
         <div class="d-flex gap-4 p-2">
           <div>
             <font-awesome-icon class="fs-4" icon="fa-solid fa-user" />
             <span class="ms-1">{{ self.login }}</span>
           </div>
-          <div role="button" @click="logout">Выход</div>
+          <div role="button" @click="logout" id="logoutBtn">Выход</div>
         </div>
       </div>
     </nav>
     <main class="container-md">
       <transition name="main-view" mode="out-in">
-        <router-view class="m-auto"></router-view>
+        <router-view class="m-auto" />
       </transition>
     </main>
 
     <BrokerModalForm ref="brokerModal" />
+    <StockPlotModal ref="plotModal" />
   </section>
 </template>
 
@@ -55,10 +71,12 @@ import { Component, Vue, ProvideReactive } from "vue-property-decorator";
 import { Views } from "./router";
 import BrokerModalForm from "./components/BrokerModalForm.vue";
 import { SocketManager } from "@/util";
-import { User } from "@stocks_exchange/server";
+import { ExchangeState, Roles, User } from "@stocks_exchange/server";
+import StockPlotModal from "@/components/StockPlotModal.vue";
 
-@Component({ components: { BrokerModalForm } })
+@Component({ components: { StockPlotModal, BrokerModalForm } })
 export default class App extends Vue {
+  private Roles = Roles;
   private routes = [
     ["Брокеры", Views.BROKERS],
     ["Акции", Views.STOCKS],
@@ -66,24 +84,31 @@ export default class App extends Vue {
   ];
   private socket: SocketManager | null = null;
 
-  get authorized() {
+  private get authorized() {
     return this.self !== null;
   }
 
-  get self(): User | null {
+  private get self(): User | null {
     return this.$store.state.self;
+  }
+
+  private get state(): ExchangeState {
+    return this.$store.state.trades.exchangeState;
   }
 
   $refs!: {
     brokerModal: BrokerModalForm;
+    plotModal: StockPlotModal;
   };
 
-  private created() {
-    this.$store.dispatch("fetch");
+  private async created() {
+    await this.$store.dispatch("fetch");
+    await this.$store.dispatch("trades/fetchState");
   }
 
   private mounted() {
     this.brokerModal = this.$refs.brokerModal;
+    this.plotModal = this.$refs.plotModal;
     this.socket = new SocketManager(this.$store);
   }
 
@@ -93,6 +118,7 @@ export default class App extends Vue {
   }
 
   @ProvideReactive() brokerModal: BrokerModalForm | null = null;
+  @ProvideReactive() plotModal: StockPlotModal | null = null;
 }
 </script>
 

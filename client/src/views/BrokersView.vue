@@ -17,12 +17,12 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, InjectReactive } from "vue-property-decorator";
+import { Component, Vue, InjectReactive, Watch } from "vue-property-decorator";
 import BrokerCard from "@/components/BrokerCard.vue";
 import BrokerModalForm from "@/components/BrokerModalForm.vue";
 import { brokers, BrokersState } from "@/store/modules/brokers";
 import { createStore } from "vuex-smart-module";
-import { User } from "@stocks_exchange/server";
+import { ExchangeState, StocksRate, User } from "@stocks_exchange/server";
 import { Store } from "vuex";
 
 // Страница брокеров
@@ -33,12 +33,23 @@ export default class BrokersView extends Vue {
   @InjectReactive() readonly brokerModal!: BrokerModalForm | null;
   private readonly brokersStore: Store<BrokersState> = createStore(brokers);
 
-  get brokers(): User[] {
+  private get brokers(): User[] {
     return this.brokersStore.state.brokers;
+  }
+
+  private get state(): ExchangeState {
+    return this.$store.state.trades.exchangeState;
   }
 
   private async created() {
     await this.brokersStore.dispatch("fetch");
+    await this.brokersStore.dispatch("fetchProfits");
+  }
+
+  @Watch("state")
+  private watchRate(value: StocksRate, old: StocksRate) {
+    this.brokersStore.dispatch("fetch");
+    this.brokersStore.dispatch("fetchProfits");
   }
 
   private async add() {

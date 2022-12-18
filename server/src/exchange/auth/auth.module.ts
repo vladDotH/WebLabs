@@ -5,6 +5,7 @@ import { ExchangeModule } from "../exchange.module";
 import { LocalStrategy } from "./local.strategy";
 import { JwtModule } from "@nestjs/jwt";
 import { JwtStrategy } from "./jwt.strategy";
+import { RolesGuard } from "./roles.guard";
 
 export const key = "$s3cr3t_key$";
 export const expire = 60 * 60 * 1000;
@@ -19,7 +20,7 @@ export const tokenKey = "token";
       signOptions: { expiresIn: expire },
     }),
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
+  providers: [RolesGuard, AuthService, LocalStrategy, JwtStrategy],
   exports: [AuthService],
 })
 export class AuthModule {}

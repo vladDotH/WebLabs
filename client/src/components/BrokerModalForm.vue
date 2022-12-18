@@ -40,8 +40,9 @@
             <input
               class="form-control"
               type="number"
-              v-model="buffer.balance"
+              v-model.number="buffer.balance"
               placeholder="300"
+              id="brokerModalBalance"
             />
           </div>
 
@@ -55,6 +56,7 @@
             type="button"
             class="btn btn-primary"
             @click="$refs.form.requestSubmit()"
+            id="modalSubmitBtn"
           >
             Подтвердить
           </button>
@@ -80,6 +82,7 @@ export default class BrokerModalForm extends Vue {
     role: Roles.BROKER,
     stocks: [],
   };
+
   private invalidLogin = false;
   private promiseResolve: (value: User | null) => void = () => {
     /**/

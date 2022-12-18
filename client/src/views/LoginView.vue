@@ -28,7 +28,11 @@
       <div class="invalid-feedback">Неверный логин или пароль</div>
     </div>
     <div class="mt-4 row d-flex justify-content-center">
-      <button type="submit" class="btn btn-primary col-6 fs-3 fw-bold">
+      <button
+        type="submit"
+        class="btn btn-primary col-6 fs-3 fw-bold"
+        id="loginButton"
+      >
         Вход
       </button>
     </div>
@@ -37,7 +41,7 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { AuthData } from "@stocks_exchange/server";
+import { AuthData, Roles } from "@stocks_exchange/server";
 import { Views } from "@/router";
 
 // Страница входа
@@ -48,7 +52,11 @@ export default class LoginView extends Vue {
 
   private async submit() {
     if (await this.$store.dispatch("login", this.ad))
-      this.$router.push({ name: Views.BROKERS });
+      this.$router.push(
+        this.$store.state.self?.role === Roles.ADMIN
+          ? { name: Views.BROKERS }
+          : { name: Views.BROKER }
+      );
     else this.valid = false;
   }
 

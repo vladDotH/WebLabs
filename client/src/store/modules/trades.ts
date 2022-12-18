@@ -13,20 +13,18 @@ function tradesUrl() {
 export class TradesState {
   exchangeState: ExchangeState = { date: "", active: false };
   rate: StocksRate = { stocks: [], date: "" };
+  history: StocksRate[] = [];
 }
 
-export class TradesGetters extends Getters<TradesState> {
-  get date() {
-    return this.state.exchangeState.date;
-  }
-
-  get active() {
-    return this.state.exchangeState.active;
-  }
-}
+export class TradesGetters extends Getters<TradesState> {}
 
 export class TradesMutations extends Mutations<TradesState> {
+  setHistory(h: StocksRate[]) {
+    this.state.history = h;
+  }
+
   updateRate(rate: StocksRate) {
+    if (rate.stocks.every((s) => s.cost > 0)) this.state.history.push(rate);
     this.state.rate = rate;
   }
 

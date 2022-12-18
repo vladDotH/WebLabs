@@ -15,6 +15,10 @@ export class SocketManager {
   constructor(store: Store<RootState>) {
     this.store = store;
     this.socket = io(config.webSocket);
+    this.socket.on("sendCurrentHistory", (data) => {
+      this.store?.commit("trades/setHistory", data);
+    });
+
     this.socket.on("postStocksRate", (rate: StocksRate) => {
       this.store?.commit("trades/updateRate", rate);
       this.store?.dispatch("trades/fetchState");

@@ -49,9 +49,10 @@
           role="switch"
           :checked="state.active"
           @input="switchTrades"
+          id="tradesSwitcher"
         />
       </div>
-      <StocksRate v-if="state?.active && rate" :rate="rate" class="pt-4" />
+      <StocksRateList v-if="state?.active && rate" :rate="rate" class="pt-4" />
     </div>
   </section>
 </template>
@@ -71,12 +72,11 @@ import { ConfigState, tradesConfig } from "@/store/modules/tradesConfig";
 
 // Страница настройки и запуска торгов (и просмотра котировок)
 @Component({
-  components: { StocksRate: StocksRateList },
+  components: { StocksRateList },
 })
 export default class TradesView extends Vue {
   private readonly configStore: Store<ConfigState> = createStore(tradesConfig);
   private cfg: TradesConfig = { dayDelay: 1000, startDate: "" };
-  private active = false;
   private changed = false;
 
   private change() {
@@ -87,29 +87,28 @@ export default class TradesView extends Vue {
     form: HTMLFormElement;
   };
 
-  get config(): TradesConfigExtended {
+  private get config(): TradesConfigExtended {
     return this.configStore.state.config;
   }
 
-  get state(): ExchangeState {
+  private get state(): ExchangeState {
     return this.$store.state.trades.exchangeState;
   }
 
-  get rate(): StocksRate {
+  private get rate(): StocksRate {
     return this.$store.state.trades.rate;
   }
 
-  private syncState() {
+  private syncConfig() {
     [this.cfg.dayDelay, this.cfg.startDate] = [
       this.config.dayDelay,
       this.config.startDate,
     ];
-    this.active = this.state.active;
   }
 
   private async created() {
     await this.configStore.dispatch("fetch");
-    this.syncState();
+    this.syncConfig();
   }
 
   private async save() {
@@ -120,7 +119,7 @@ export default class TradesView extends Vue {
   private async switchTrades() {
     this.$store.dispatch("trades/switchTrades");
     await this.configStore.dispatch("fetch");
-    this.syncState();
+    this.syncConfig();
   }
 }
 </script>

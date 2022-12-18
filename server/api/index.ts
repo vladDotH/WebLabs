@@ -70,9 +70,42 @@ export interface TradesConfig {
   dayDelay: number;
 }
 
+// Параметры торгов с датами (передаётся только клиенту)
 export interface TradesConfigExtended extends TradesConfig {
   dateRange: [string, string];
 }
+
+// Тип транзакции
+export enum TransactionTypes {
+  BUY,
+  SELL,
+}
+
+// Покупка/продажа определённого количества акций по заданной цене
+export interface Transaction {
+  brokerId: number;
+  stocks: StockBundle & StockRateRecord;
+  type: TransactionTypes;
+}
+
+// Запись о прибыли по акции
+export interface ProfitRecord {
+  key: string;
+  value: number;
+}
+
+export interface ProfitInfo extends Indexed {
+  profits: ProfitRecord[];
+}
+
+// События отправляемые сервером по Вебсокету
+export interface ServerToClientEvents {
+  postStocksRate: (data: StocksRate) => void;
+  sendCurrentHistory: (data: StocksRate[]) => void;
+}
+
+// События отправляемые клиентом
+export type ClientToServerEvents = EventsMap;
 
 // Параметры клиент-серверного взаимодействия
 export const config = {
@@ -85,11 +118,3 @@ export const config = {
   // Адрес клиентского приложения
   client: "http://localhost:8080",
 };
-
-// События отправляемые сервером по Вебсокету
-export interface ServerToClientEvents {
-  postStocksRate: (data: StocksRate) => void;
-}
-
-// События отправляемые клиентом
-export type ClientToServerEvents = EventsMap;

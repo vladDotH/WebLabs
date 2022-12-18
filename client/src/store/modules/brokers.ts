@@ -1,5 +1,10 @@
 import { Getters, Mutations, Actions, Module } from "vuex-smart-module";
-import { config, User } from "@stocks_exchange/server";
+import {
+  config,
+  ProfitInfo,
+  ProfitRecord,
+  User,
+} from "@stocks_exchange/server";
 import axios from "axios";
 
 function brokersUrl(): URL {
@@ -10,8 +15,13 @@ function brokerUrl(id: number) {
   return new URL(`broker/${id}`, config.api);
 }
 
+function profitUrl(id: number) {
+  return new URL(`profit/${id}`, config.api);
+}
+
 export class BrokersState {
   brokers: User[] = [];
+  profits: ProfitInfo[] = [];
 }
 
 export class BrokersGetters extends Getters<BrokersState> {}
@@ -25,6 +35,10 @@ export class BrokersMutations extends Mutations<BrokersState> {
     this.state.brokers.unshift(data);
   }
 
+  setBrokers(brokers: User[]) {
+    this.state.brokers = brokers;
+  }
+
   removeBroker(id: number) {
     const index = this.state.brokers.findIndex((b) => b.id === id);
     if (index !== -1) this.state.brokers.splice(index, 1);
@@ -33,6 +47,10 @@ export class BrokersMutations extends Mutations<BrokersState> {
   updateBroker(data: User) {
     const index = this.state.brokers.findIndex((b) => b.id === data.id);
     if (index !== -1) this.state.brokers.splice(index, 1, data);
+  }
+
+  setProfits(p: ProfitInfo[]) {
+    this.state.profits = p;
   }
 }
 
@@ -44,12 +62,15 @@ export class BrokersActions extends Actions<
 > {
   async fetch() {
     const ids = (await axios.get<number[]>(brokersUrl().toString())).data;
-    for (const id of ids) {
-      this.mutations.pushBroker(
-        (await axios.get<User>(brokerUrl(id).toString())).data
-      );
-    }
+    this.mutations.setBrokers(
+      await Promise.all(
+        ids.map(
+          async (id) => (await axios.get<User>(brokerUrl(id).toString())).data
+        )
+      )
+    );
   }
+
   async addBroker(data: User): Promise<boolean> {
     const id = (await axios.post<number>(brokersUrl().toString(), data)).data;
     if (id) {
@@ -58,6 +79,7 @@ export class BrokersActions extends Actions<
     }
     return false;
   }
+
   async removeBroker(id: number) {
     this.mutations.removeBroker(id);
     return (await axios.delete(brokerUrl(id).toString())).data;
@@ -72,6 +94,22 @@ export class BrokersActions extends Actions<
       return res;
     }
     return false;
+  }
+
+  async fetchProfits() {
+    this.mutations.setProfits(
+      await Promise.all(
+        this.state.brokers.map(
+          async (b) =>
+            ({
+              id: b.id,
+              profits: (
+                await axios.get<ProfitRecord[]>(profitUrl(b.id ?? 0).toString())
+              ).data,
+            } as ProfitInfo)
+        )
+      )
+    );
   }
 }
 

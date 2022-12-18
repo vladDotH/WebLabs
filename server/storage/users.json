@@ -3,36 +3,42 @@
     "login": "admin",
     "password": "admin",
     "role": 1,
-    "balance": 0
+    "balance": 0,
+    "stocks": []
   },
   {
     "login": "admin2",
     "password": "password",
     "role": 1,
-    "balance": 0
+    "balance": 0,
+    "stocks": []
   },
   {
-    "login": "$anatolyi$",
+    "login": "$anatoliy$",
     "password": "tolya",
     "role": 0,
-    "balance": 300
+    "balance": 300,
+    "stocks": []
   },
   {
     "login": "vadim",
     "password": "vadik",
     "role": 0,
-    "balance": 3000
+    "balance": 3000,
+    "stocks": []
   },
   {
     "login": "vladDotH",
     "password": "vladik",
     "role": 0,
-    "balance": 0
+    "balance": 0,
+    "stocks": []
   },
   {
     "login": "kostyan",
     "password": "kostya",
     "role": 0,
-    "balance": 9999
+    "balance": 9999,
+    "stocks": []
   }
 ]

@@ -23,7 +23,7 @@
 <script lang="ts">
 import { Component, Vue, Prop, Emit } from "vue-property-decorator";
 import { StocksState } from "@/store/modules/stocks";
-import { Stock } from "@stocks_exchange/server/dist/api";
+import { Stock } from "@stocks_exchange/server";
 import { Store } from "vuex";
 
 // Список выбора акций
@@ -38,10 +38,6 @@ export default class StocksView extends Vue {
 
   private get active(): string[] {
     return this.stocksStore.state.active;
-  }
-
-  private async created() {
-    await this.stocksStore.dispatch("fetch");
   }
 
   private switchStock(key: string) {

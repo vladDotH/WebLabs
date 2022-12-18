@@ -34,16 +34,16 @@ ChartJS.register(
 export default class StockPlot extends Vue {
   @Prop({ required: true }) readonly history!: StockHistory;
 
-  get options() {
+  private get options() {
     return { responsive: true };
   }
 
-  get plotData() {
+  private get plotData() {
     return {
       labels: this.history?.records?.map((r) => r.date),
       datasets: [
         {
-          label: `Курс ${this.history.stock.key}`,
+          label: `Курс акций ${this.history.stock.company}`,
           data: this.history?.records?.map((r) => r.cost),
           borderColor: "#198754",
         },

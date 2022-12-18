@@ -6,7 +6,7 @@ import { Indexed, User } from "@api";
 import { ExchangeService } from "../exchange.service";
 
 // Извлечение токена из куки
-export const cookieExtractor: JwtFromRequestFunction = function (req): string {
+export const cookieExtractor: JwtFromRequestFunction = (req) => {
   return req.signedCookies[tokenKey] ?? null;
 };
 

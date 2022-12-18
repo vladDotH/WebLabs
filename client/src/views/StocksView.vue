@@ -7,6 +7,7 @@
           type="button"
           class="btn-close"
           data-bs-dismiss="offcanvas"
+          id="stocksOffCanvasDismiss"
         ></button>
       </div>
       <div class="offcanvas-body">
@@ -25,7 +26,7 @@
         type="button"
         data-bs-toggle="offcanvas"
         data-bs-target="#offcanvas"
-        aria-controls="staticBackdrop"
+        id="offCanvasButton"
       >
         <font-awesome-icon icon="fa-solid fa-bars" />
       </button>
@@ -71,7 +72,7 @@ import StockTable from "@/components/StockTable.vue";
 import StockPlot from "@/components/StockPlot.vue";
 import { createStore } from "vuex-smart-module";
 import { stocks, StocksState } from "@/store/modules/stocks";
-import { Stock, StockHistory } from "@stocks_exchange/server/dist/api";
+import { Stock, StockHistory } from "@stocks_exchange/server";
 import { Store } from "vuex";
 import StocksList from "@/components/StocksList.vue";
 
@@ -106,10 +107,6 @@ export default class StocksView extends Vue {
 
   private async created() {
     await this.stocksStore.dispatch("fetch");
-  }
-
-  private switchStock(key: string) {
-    this.stocksStore.dispatch("switchStock", key);
   }
 
   private select(key: string) {

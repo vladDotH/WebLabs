@@ -24,11 +24,15 @@ export class StocksGetters extends Getters<StocksState> {}
 
 export class StocksMutations extends Mutations<StocksState> {
   updateAvailable(stocks: Stock[]) {
-    this.state.available.splice(0, this.state.available.length, ...stocks);
+    this.state.available = stocks;
   }
 
   updateHistory(history: StockHistory[]) {
-    this.state.history.splice(0, this.state.history.length, ...history);
+    this.state.history = history;
+  }
+
+  setActive(keys: string[]) {
+    this.state.active = keys;
   }
 
   addActive(key: string) {
@@ -60,8 +64,8 @@ export class StocksActions extends Actions<
         )
       )
     );
-    (await axios.get<string[]>(activeUrl().toString())).data.forEach((key) =>
-      this.mutations.addActive(key)
+    this.mutations.setActive(
+      (await axios.get<string[]>(activeUrl().toString())).data
     );
   }
 

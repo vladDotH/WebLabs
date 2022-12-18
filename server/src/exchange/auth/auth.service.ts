@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { ExchangeService } from "../exchange.service";
-import { AuthData, Roles, User } from "@api";
+import { AuthData, User } from "@api";
 import { JwtService } from "@nestjs/jwt";
 import { Response } from "express";
 import { expire, tokenKey } from "./auth.module";
@@ -14,8 +14,7 @@ export class AuthService {
 
   validateUser(ad: AuthData): User | null {
     const user = this.es.getByLogin(ad.login);
-    if (user && user.password === ad.password && user.role === Roles.ADMIN)
-      return user;
+    if (user && user.password === ad.password) return user;
     return null;
   }
 

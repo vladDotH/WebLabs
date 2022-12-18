@@ -5,9 +5,11 @@ import {
   OnGatewayConnection,
   OnGatewayDisconnect,
 } from "@nestjs/websockets";
+import { Inject, forwardRef } from "@nestjs/common";
 import { Socket, Server } from "socket.io";
 import { EventsMap } from "socket.io/dist/typed-events";
 import { ClientToServerEvents, ServerToClientEvents, StocksRate } from "@api";
+import { ExchangeService } from "./exchange.service";
 
 @WebSocketGateway({ cors: true })
 export class WebSocketService
@@ -22,8 +24,20 @@ export class WebSocketService
   >;
   private connections: Socket[] = [];
 
+  constructor(
+    @Inject(forwardRef(() => ExchangeService))
+    private readonly es: ExchangeService
+  ) {}
+
   postStocksRate(rates: StocksRate) {
     this.server.emit("postStocksRate", rates);
+  }
+
+  sendCurrentHistory(client?: Socket) {
+    (client ?? this.server).emit(
+      "sendCurrentHistory",
+      this.es.getRatesHistory()
+    );
   }
 
   afterInit(server: Server) {
@@ -31,6 +45,7 @@ export class WebSocketService
   }
 
   handleConnection(client: Socket) {
+    this.sendCurrentHistory(client);
     this.connections.push(client);
   }
 
